@@ -4,10 +4,10 @@ inputdir=/home/jana/Documents/GitHub/BA_Sokol_09971444/WRF/GFS/
 rm -rf $inputdir
 mkdir $inputdir
 
-year=2021
-month=10
-day=22
-cycle=00
+year=$1
+month=$2
+day=$3
+cycle=$4
 
 for ((i=000; i<=006; i+=3))
 do
