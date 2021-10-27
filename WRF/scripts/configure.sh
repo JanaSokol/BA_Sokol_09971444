@@ -14,9 +14,10 @@ WRFDIR=$WRFROOT/WRF
 # unzip dependencies, WRF and WPS
 #################################
 cd $DOWNLOADSDIR
-#for i in *.gz ; do tar xzf $i ; done
-#mv -v WPS-4.3/ ../WPS
-#mv -v WRF-4.3/ ../WRF
+for i in *.gz ; do tar xzf $i ; done
+mv -v WPS-4.3/ ../WPS
+mv -v WRF-4.3/ ../WRF
+wget -O ${DOWNLOADSDIR} https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_high_res_mandatory.tar.gz
 cd geog_high_res_mandatory/
 mv -v WPS_GEOG/ ../../GEOG
 
@@ -103,71 +104,71 @@ export LIBDIR=$WRFROOT/libs
 #################################
 # zlib
 #################################
-#cd $DOWNLOADSDIR/zlib-1.2.11
-#./configure --prefix=$LIBDIR/grib2 
-#make 
-#make install
+cd $DOWNLOADSDIR/zlib-1.2.11
+./configure --prefix=$LIBDIR/grib2 
+make 
+make install
 
 #################################
 # libpng
 #################################
-#cd $DOWNLOADSDIR/libpng-1.6.37
-#./configure --prefix=$LIBDIR/grib2 LDFLAGS="-L$LIBDIR/grib2/lib" CPPFLAGS="-I$LIBDIR/grib2/include"
-#make 
-#make install
-#cd ..
-#rm libpng-1.6.37
+cd $DOWNLOADSDIR/libpng-1.6.37
+./configure --prefix=$LIBDIR/grib2 LDFLAGS="-L$LIBDIR/grib2/lib" CPPFLAGS="-I$LIBDIR/grib2/include"
+make 
+make install
+cd ..
+rm libpng-1.6.37
 
 #################################
 # jasper
 #################################
-#cd $DOWNLOADSDIR/jasper-1.900.1
-#./configure --prefix=$LIBDIR/grib2
-#make 
-#make install
-#cd ..
-#rm jasper-1.900.1
+cd $DOWNLOADSDIR/jasper-1.900.1
+./configure --prefix=$LIBDIR/grib2
+make 
+make install
+cd ..
+rm jasper-1.900.1
 
 #################################
 # netcdf
 #################################
-#cd $DOWNLOADSDIR/netcdf-4.1.2
-#./configure --prefix=$LIBDIR/netcdf --disable-dap --disable-netcdf-4
-#make 
-#make install
-#cd ..
-#rm netcdf-4.1.2
+cd $DOWNLOADSDIR/netcdf-4.1.2
+./configure --prefix=$LIBDIR/netcdf --disable-dap --disable-netcdf-4
+make 
+make install
+cd ..
+rm netcdf-4.1.2
 
 #################################
 # mpich
 #################################
-#cd $DOWNLOADSDIR/mpich-3.3.2
-#./configure --prefix=$LIBDIR/mpich
-#make 
-#make install
-#cd ..
-#rm mpich-3.3.2
+cd $DOWNLOADSDIR/mpich-3.3.2
+./configure --prefix=$LIBDIR/mpich
+make 
+make install
+cd ..
+rm mpich-3.3.2
 
 #################################
 # WRF
 #################################
-#cd $WRFDIR
-#export LIBDIR=$LIBDIR
-#export NETCDF=$LIBDIR/netcdf
-#export PATH=$LIBDIR/mpich/bin:$PATH
-#export JASPERLIB=$LIBDIR/grib2/lib
-#export JASPERINC=$LIBDIR/grib2/include
-#./configure
-#./compile em_real
-#export LD_LIBRARY_PATH=$NETCDF/lib:$LD_LIBRARY_PATH+
+cd $WRFDIR
+export LIBDIR=$LIBDIR
+export NETCDF=$LIBDIR/netcdf
+export PATH=$LIBDIR/mpich/bin:$PATH
+export JASPERLIB=$LIBDIR/grib2/lib
+export JASPERINC=$LIBDIR/grib2/include
+./configure
+./compile em_real
+export LD_LIBRARY_PATH=$NETCDF/lib:$LD_LIBRARY_PATH+
 
 #################################
 # WPS
 #################################
 cd $WRFROOT/WPS
-#export WRF_DIR=$WRFDIR
-#./configure
-#./compile
+export WRF_DIR=$WRFDIR
+./configure
+./compile
 
 
 
