@@ -14,12 +14,13 @@ WRFDIR=$WRFROOT/WRF
 # unzip dependencies, WRF and WPS
 #################################
 cd $DOWNLOADSDIR
+sudo wget https://github.com/wrf-model/WRF/archive/refs/tags/v4.3.tar.gz -O ${DOWNLOADSDIR}/WRF.tar.gz
+sudo wget https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_high_res_mandatory.tar.gz -O ${DOWNLOADSDIR}/GEOG.tar.gz
+echo "********** starting to unzip **********"
 for i in *.gz ; do tar xzf $i ; done
 mv -v WPS-4.3/ ../WPS
 mv -v WRF-4.3/ ../WRF
-wget -O ${DOWNLOADSDIR} https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_high_res_mandatory.tar.gz
-cd geog_high_res_mandatory/
-mv -v WPS_GEOG/ ../../GEOG
+mv -v WPS_GEOG/ ../GEOG
 
 #################################
 # installing necessary packages 
@@ -59,17 +60,8 @@ fi
 
 #mc
 if installed mc; then
-    echo "This is optional, do you want to install mc? Midnight Commander is a text-mode full-screen file manager."
-    read -p '[Y/N]' answervar
-    if [$answervar == 'Y'] || [$answervar == 'y']; then
-        sudo apt install mc
-    fi
+    sudo apt install mc
 else
-    echo "This is optional, do you want to install mc? Midnight Commander is a text-mode full-screen file manager."
-    read -p '[Y/N]' answervar
-    if [$answervar == 'Y'] || [$answervar == 'y']; then
-        sudo apt install mc
-    fi
     echo "mc is already installed."
 fi
 
@@ -160,7 +152,7 @@ export JASPERLIB=$LIBDIR/grib2/lib
 export JASPERINC=$LIBDIR/grib2/include
 ./configure
 ./compile em_real
-export LD_LIBRARY_PATH=$NETCDF/lib:$LD_LIBRARY_PATH+
+export LD_LIBRARY_PATH=$NETCDF/lib:$LD_LIBRARY_PATH
 
 #################################
 # WPS

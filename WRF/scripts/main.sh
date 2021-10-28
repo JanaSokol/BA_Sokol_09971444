@@ -47,7 +47,7 @@ rm -rf $WRFDIR/run/namelist.input
 echo " " 
 echo "********** Downloading GFS Data **********"
 echo " " 
-bash $SCRIPTDIR/download_gfs.sh $STARTYEAR $STARTMONTH $STARTDAY $STARTHOUR
+#bash $SCRIPTDIR/download_gfs.sh $STARTYEAR $STARTMONTH $STARTDAY $STARTHOUR
 
 #################################
 # update namelist.wps
@@ -72,7 +72,8 @@ if test -f "$FILE"; then
     echo "$FILE exists."
 else
     echo "create domain."
-    ./georgrid.exe
+    ./geogrid.exe
+    ln -s ungrib/Variable_Tables/Vtable.GFS ./Vtable
 fi
 
 
