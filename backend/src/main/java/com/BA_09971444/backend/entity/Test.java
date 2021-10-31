@@ -1,9 +1,13 @@
 package com.BA_09971444.backend.entity;
 
-
 import javax.persistence.*;
 import java.util.Objects;
 
+/**
+ * Test
+ *
+ * Represents a test object.
+ */
 @Entity
 public class Test {
 
@@ -60,14 +64,16 @@ public class Test {
 
         }
 
-        public static TestBuilder aTest(){ return new TestBuilder();}
+        public static TestBuilder aTest() {
+            return new TestBuilder();
+        }
 
-        public  TestBuilder withId(Long id) {
+        public TestBuilder withId(Long id) {
             this.id = id;
             return this;
         }
 
-        public  TestBuilder withText(String text) {
+        public TestBuilder withText(String text) {
             this.text = text;
             return this;
         }
@@ -77,7 +83,7 @@ public class Test {
             test.setId(id);
             test.setText(text);
 
-            return  test;
+            return test;
         }
     }
 }

@@ -2,6 +2,11 @@ package com.BA_09971444.backend.endpoint.dto;
 
 import java.util.Objects;
 
+/**
+ * TestDto
+ *
+ * Includes id and text.
+ */
 public class TestDto {
 
     private Long id;

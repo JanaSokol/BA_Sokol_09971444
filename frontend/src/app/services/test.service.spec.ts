@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { WrfService } from './wrf.service';
+import { TestService } from './test.service';
 
-describe('WrfService', () => {
-  let service: WrfService;
+describe('TestService', () => {
+  let service: TestService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(WrfService);
+    service = TestBed.inject(TestService);
   });
 
   it('should be created', () => {

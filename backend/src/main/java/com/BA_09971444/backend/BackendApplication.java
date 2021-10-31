@@ -8,10 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@ComponentScan({"com.delivery.request"})
-@EntityScan("com.delivery.domain")
-@EnableJpaRepositories("com.delivery.repository")
-public class BackendApplication extends SpringBootServletInitializer {
+public class BackendApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BackendApplication.class, args);

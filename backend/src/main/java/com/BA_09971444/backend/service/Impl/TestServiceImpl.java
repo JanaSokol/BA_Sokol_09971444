@@ -1,9 +1,9 @@
 package com.BA_09971444.backend.service.Impl;
 
 import com.BA_09971444.backend.entity.Test;
+import com.BA_09971444.backend.exception.NotFoundException;
 import com.BA_09971444.backend.repository.TestRepository;
 import com.BA_09971444.backend.service.TestService;
-import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public Test get(Long id) throws NotFoundException {
+    public Test get(Long id) {
         LOGGER.debug("Find test with if {}", id);
 
         Optional<Test> optionalTest = testRepository.findById(id);
