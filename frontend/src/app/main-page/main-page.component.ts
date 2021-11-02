@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {TestService} from "../services/test.service";
 import {Test} from "../dtos/test";
+import {WrfService} from "../services/wrf.service";
 
 @Component({
   selector: 'app-main-page',
@@ -9,17 +9,16 @@ import {Test} from "../dtos/test";
 })
 export class MainPageComponent implements OnInit {
 
-  constructor(private testService: TestService) { }
+  constructor(private wrfService: WrfService) { }
 
   ngOnInit(): void {
     console.log("HERE")
-    this.loadTestById(1)
   }
 
-  private loadTestById(id:number) {
+  runMainScript() {
     console.log("LETS GO")
-    this.testService.getTestById(id).subscribe(
-      (test: Test) => {
+    this.wrfService.runMainScript().subscribe(
+      (test: number) => {
         console.log(test)
       },
       error => {

@@ -1,12 +1,13 @@
 #!/bin/bash
 
-inputdir=/home/jana/Documents/GitHub/BA_Sokol_09971444/WRF/GFS/
+ROOTDIR=$(find $HOME -type d -name BA_Sokol_09971444)
+inputdir=$ROOTDIR/WRF/GFS/
 rm -rf $inputdir
 mkdir $inputdir
 
-year=$1
+year=$3
 month=$2
-day=$3
+day=$1
 cycle=$4
 
 for ((i=000; i<=006; i+=3))

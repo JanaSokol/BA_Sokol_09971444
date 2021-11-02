@@ -3,17 +3,27 @@
 #################################
 # input
 #################################
-STARTYEAR=2021
-STARTDAY=22
-STARTMONTH=10
-STARTHOUR=00
+STARTYEAR=$3
+STARTDAY=$1
+STARTMONTH=$2
+STARTHOUR=$4
 ENDHOUR=06
+
+#################################
+# error handling
+#################################
+
+exit_upon_error(){
+    echo "Error: $1"
+    exit 1
+}
 
 #################################
 # enviroment variables
 #################################
-cd ..
-WRFROOT=`pwd`
+
+ROOTDIR=$(find $HOME -type d -name BA_Sokol_09971444)
+WRFROOT=$ROOTDIR/WRF
 WPSDIR=$WRFROOT/WPS
 WRFDIR=$WRFROOT/WRF
 SCRIPTDIR=$WRFROOT/scripts
@@ -42,14 +52,6 @@ rm -rf $WRFDIR/run/met_em*
 rm -rf $WRFDIR/run/namelist.input
 
 #################################
-# downloading GFS
-#################################
-echo " " 
-echo "********** Downloading GFS Data **********"
-echo " " 
-#bash $SCRIPTDIR/download_gfs.sh $STARTYEAR $STARTMONTH $STARTDAY $STARTHOUR
-
-#################################
 # update namelist.wps
 #################################
 cp $CONFIGDIR/namelist.wps $WPSDIR/namelist.wps
@@ -66,14 +68,21 @@ sed -i "s/ENDHOUR/$ENDHOUR/g" $WPSDIR/namelist.wps
 #################################
 # geogrid
 #################################
+echo " " 
+echo "*********** Running geogrid *********** "
+echo " " 
 cd $WPSDIR
 FILE=$WPSDIR/geo_em.d01.nc
 if test -f "$FILE"; then
-    echo "$FILE exists."
+    echo "$FILE already exists."
 else
     echo "create domain."
-    ./geogrid.exe
+    ./geogrid.exe || exit_upon_error "geogrid.exe failed"
     ln -s ungrib/Variable_Tables/Vtable.GFS ./Vtable
+
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
+    echo "!  Successful completion of geogrid.  ! "
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
 fi
 
 
@@ -81,14 +90,14 @@ fi
 # ungrib and metgrid
 #################################
 ./link_grib.csh $WRFROOT/GFS/
-echo " "
-echo "********** Running ungrib **********"
-echo " "
-./ungrib.exe
-echo " "
-echo "********** Running metgrid **********"
-echo " "
-./metgrid.exe
+echo " " 
+echo "*********** Running ungrib ************ "
+echo " " 
+./ungrib.exe || exit_upon_error "ungrib.exe failed"
+echo " " 
+echo "*********** Running metgrid *********** "
+echo " " 
+./metgrid.exe || exit_upon_error "metgrid.exe failed"
 
 #################################
 # update namelist.input
@@ -110,13 +119,17 @@ sed -i "s/ENDHOUR/$ENDHOUR/g" $WRFDIR/run/namelist.input
 cd $WRFDIR/run
 ln -s $WPSDIR/met_em* .
 echo " "
-echo "********** Running real **********"
+echo "*********** Running real ************** "
 echo " "
-mpirun -n 2 ./real.exe
-echo " "
-echo "********** Running WRF **********"
-echo " "
-mpirun -n 3 ./wrf.exe
+mpirun -n 2 ./real.exe || exit_upon_error "real.exe failed"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
+echo "!    Successful completion of real.   ! "
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
 
-
-
+echo ""
+echo "*********** Running WRF *************** "
+echo "This might take a few minutes. "
+mpirun -n 3 ./wrf.exe || exit_upon_error "wrf.exe failed"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
+echo "!    Successful completion of WRF.    ! "
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "

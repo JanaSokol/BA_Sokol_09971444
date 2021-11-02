@@ -8,11 +8,11 @@ import {Test} from "../dtos/test";
 })
 export class TestService {
 
-  private testBaseUri: string = 'http://localhost:8080/';
+  private testBaseUri: string = 'http://localhost:8080/weather';
 
   constructor(private httpClient: HttpClient) { }
 
   getTestById(id:number): Observable<Test> {
-    return this.httpClient.get<Test>(this.testBaseUri + '/weather/' + id);
+    return this.httpClient.get<Test>(this.testBaseUri + id);
   }
 }
