@@ -4,11 +4,12 @@
 #################################
 # directory paths
 #################################
-cd ..
-WRFROOT=`pwd`
+ROOTDIR=$(find $HOME -type d -name BA_Sokol_09971444)
+WRFROOT=$ROOTDIR/WRF
 DOWNLOADSDIR=$WRFROOT/downloads
 LIBSDIR=$WRFROOT/libs
-WRFDIR=$WRFROOT/WRF
+ARWDIR=$WRFROOT/WRF-ARW
+NMMDIR=$WRFROOT/WRF-NMM
 
 #################################
 # unzip dependencies, WRF and WPS
@@ -19,7 +20,7 @@ sudo wget https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_high_res_mandatory.ta
 echo "********** starting to unzip **********"
 for i in *.gz ; do tar xzf $i ; done
 mv -v WPS-4.3/ ../WPS
-mv -v WRF-4.3/ ../WRF
+mv -v WRF-4.3/ ../WRF-ARW
 mv -v WPS_GEOG/ ../GEOG
 
 #################################
@@ -144,13 +145,19 @@ rm mpich-3.3.2
 #################################
 # WRF
 #################################
-cd $WRFDIR
 export LIBDIR=$LIBDIR
 export NETCDF=$LIBDIR/netcdf
 export PATH=$LIBDIR/mpich/bin:$PATH
 export JASPERLIB=$LIBDIR/grib2/lib
 export JASPERINC=$LIBDIR/grib2/include
+cd $ARWDIR
 ./configure
+cd ..
+cp -r WRF-ARW/ $WRFROOT/WRF-ARW
+cd $ARWDIR
+./compile nmm_real
+cd $NMMDIR
+export WRF_NMM_CORE=1
 ./compile em_real
 export LD_LIBRARY_PATH=$NETCDF/lib:$LD_LIBRARY_PATH
 

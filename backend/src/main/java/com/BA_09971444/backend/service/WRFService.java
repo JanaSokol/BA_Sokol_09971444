@@ -1,13 +1,13 @@
 package com.BA_09971444.backend.service;
 
-import java.sql.Date;
+import com.BA_09971444.backend.entity.DateTime;
 
 public interface WRFService {
 
     /**
      * Gets the WRF output for a specific day.
-     * TODO
-     * @param month to calculate WRF.
+     *
+     * @param dateTime to calculate by.
      */
-    void getWRFOutputByDate(int day, int month, int year, int cycle);
+    void getWRFOutputByDate(DateTime dateTime);
 }

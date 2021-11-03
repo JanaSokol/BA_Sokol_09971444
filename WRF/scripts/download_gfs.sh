@@ -9,6 +9,18 @@ year=$3
 month=$2
 day=$1
 cycle=$4
+#################################
+# error handling
+#################################
+
+exit_upon_error(){
+    echo "Error: $1"
+    exit 1
+}
+
+#################################
+# downloading gfs data
+#################################
 
 for ((i=000; i<=006; i+=3))
 do
@@ -22,6 +34,6 @@ do
 
     echo $url
 
-    wget -O ${inputdir}/${file} ${url}
+    wget -O ${inputdir}/${file} ${url} || exit_upon_error "download failed"
 
 done

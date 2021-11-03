@@ -1,5 +1,7 @@
 package com.BA_09971444.backend.service.Impl;
 
+import com.BA_09971444.backend.entity.DateTime;
+import com.BA_09971444.backend.exception.InvalidDateException;
 import com.BA_09971444.backend.exception.WRFBuildFailedException;
 import com.BA_09971444.backend.service.WRFService;
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 
 @Service
 public class WRFServiceImpl implements WRFService {
@@ -24,11 +27,11 @@ public class WRFServiceImpl implements WRFService {
     }
 
     @Override
-    public void getWRFOutputByDate(int day, int month, int year, int cycle) {
-        LOGGER.debug("Get WRF Output by date: {}.{}.{} and cycle {}", day, month, year, cycle);
+    public void getWRFOutputByDate(DateTime dateTime) {
+        LOGGER.debug("Get WRF Output by date: {} and cycle: {}", dateTime.getDate(), dateTime.getCycle());
 
         // Run main script
-        runMainScript(day, month, year, cycle);
+        runMainScript(dateTime.getDate(), dateTime.getCycle());
     }
 
     /**
@@ -37,19 +40,16 @@ public class WRFServiceImpl implements WRFService {
      * Executes ungrib, metgrid and WPS.
      * Computes WRF output.
      *
-     * @param day   of file to download.
-     * @param month of file to download.
-     * @param year  of file to download.
+     * @param date  date of file to download.
      * @param cycle of file to download.
      */
-    private void runMainScript(int day, int month, int year, int cycle) {
+    private void runMainScript(LocalDate date, Long cycle) {
         LOGGER.debug("Run main.sh script");
-
         // Download data
-        //downloadGFSData(day, month, year, cycle);
+        downloadGFSData(date, cycle);
 
         // Creates processBuilder to run script
-        String[] command = new String[]{getScriptDirectory() + "/main.sh", String.valueOf(day), String.valueOf(month), String.valueOf(year), (cycle > 9 ? String.valueOf(cycle) : "0" + cycle)};
+        String[] command = new String[]{getScriptDirectory() + "/main.sh", String.valueOf(date.getDayOfMonth()), String.valueOf(date.getMonthValue()), String.valueOf(date.getYear()), (cycle > 9 ? String.valueOf(cycle) : "0" + cycle)};
         try {
             runProcess(command, false);
         } catch (WRFBuildFailedException e) {
@@ -60,18 +60,16 @@ public class WRFServiceImpl implements WRFService {
     /**
      * Runs bash script to download GFS Data.
      *
-     * @param day   of file to download.
-     * @param month of file to download.
-     * @param year  of file to download.
+     * @param date  date of file to download.
      * @param cycle of file to download.
      */
-    private void downloadGFSData(int day, int month, int year, int cycle) {
-        LOGGER.debug("Download GFS Data with date: {}.{}.{} and cycle {}", day, month, year, cycle);
+    private void downloadGFSData(LocalDate date, Long cycle) {
+        LOGGER.debug("Download GFS Data with date: {} and cycle: {}", date, cycle);
 
-        String[] command = new String[]{getScriptDirectory() + "/download_gfs.sh", String.valueOf(day), String.valueOf(month), String.valueOf(year), (cycle > 9 ? String.valueOf(cycle) : "0" + cycle)};
+        String[] command = new String[]{getScriptDirectory() + "/download_gfs.sh", String.valueOf(date.getDayOfMonth()), String.valueOf(date.getMonthValue()), String.valueOf(date.getYear()), (cycle > 9 ? String.valueOf(cycle) : "0" + cycle)};
         try {
             runProcess(command, true);
-        } catch (WRFBuildFailedException e) {
+        } catch (WRFBuildFailedException | InvalidDateException e) {
             throw new WRFBuildFailedException("Downloading GFS Data failed. " + e.getMessage());
         }
     }
@@ -97,7 +95,10 @@ public class WRFServiceImpl implements WRFService {
             while ((line = reader.readLine()) != null) {
                 LOGGER.info(line);
             }
-        } catch (IOException e) {
+
+            int exitCode = process.waitFor();
+            if (exitCode != 0 && isDownload) throw new InvalidDateException("Invalid date given.");
+        } catch (IOException | InterruptedException e) {
             throw new WRFBuildFailedException(e.getMessage());
         }
     }

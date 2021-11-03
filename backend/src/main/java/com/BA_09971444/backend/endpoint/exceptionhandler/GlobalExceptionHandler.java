@@ -1,6 +1,8 @@
 package com.BA_09971444.backend.endpoint.exceptionhandler;
 
+import com.BA_09971444.backend.exception.InvalidDateException;
 import com.BA_09971444.backend.exception.NotFoundException;
+import com.BA_09971444.backend.exception.WRFBuildFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +36,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         LOGGER.warn("NotFoundException" + ex.getMessage());
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
+
+    @ExceptionHandler(value = {WRFBuildFailedException.class})
+    protected ResponseEntity<Object> wrfbuildfailedexception(RuntimeException ex, WebRequest request) {
+        LOGGER.warn("WRFBuildFailedException" + ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
+    }
+
+    @ExceptionHandler(value = {InvalidDateException.class})
+    protected ResponseEntity<Object> invalidDateException(RuntimeException ex, WebRequest request) {
+        LOGGER.warn("InvalidDateException" + ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY, request);
+    }
+
 
     /**
      * Override methods from ResponseEntityExceptionHandler to send a customized HTTP response for a know exception
