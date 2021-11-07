@@ -9,7 +9,8 @@ WRFROOT=$ROOTDIR/WRF
 DOWNLOADSDIR=$WRFROOT/downloads
 LIBSDIR=$WRFROOT/libs
 ARWDIR=$WRFROOT/WRF-ARW
-#NMMDIR=$WRFROOT/WRF-NMM
+POSTDIR=$WRFROOT/ARWpost
+WPSDIR=$WRFROOT/WPS
 
 #################################
 # unzip dependencies, WRF and WPS
@@ -22,6 +23,7 @@ for i in *.gz ; do tar xzf $i ; done
 mv -v WPS-4.3/ ../WPS
 mv -v WRF-4.3/ ../WRF-ARW
 mv -v ARWpost/ ../ARWpost
+mv -v opengrads-2.2.1.oga.1/ ../GrADs
 mv -v WPS_GEOG/ ../GEOG
 
 #################################
@@ -154,17 +156,13 @@ export JASPERINC=$LIBDIR/grib2/include
 cd $ARWDIR
 ./configure
 cd ..
-#cp -r WRF-ARW/ $WRFROOT/WRF-ARW
-#cd $ARWDIR
-#./compile nmm_real
-#export WRF_NMM_CORE=1
 ./compile em_real
 export LD_LIBRARY_PATH=$NETCDF/lib:$LD_LIBRARY_PATH
 
 #################################
 # WPS
 #################################
-cd $WRFROOT/WPS
+cd $WPSDIR
 export WRF_DIR=$WRFDIR
 ./configure
 ./compile
@@ -172,16 +170,16 @@ export WRF_DIR=$WRFDIR
 #################################
 # ARWpost
 #################################
-cd $WRFROOT/ARWpost
+cd $POSTDIR
 ./configure
 # choose 3
 search="-C -P -traditional"
 replace="-P -traditional"
-sed -i "s/$search/$replace/g" $WRFROOT/ARWpost/configure.arwp
+sed -i "s/$search/$replace/g" $POSTDIR/configure.arwp
 
 search2="include  -lnetcdf"
 replace2="include  -lnetcdff  -lnetcdf"
-sed -i "s/$search2/$replace2/g" $WRFROOT/ARWpost/src/Makefile
+sed -i "s/$search2/$replace2/g" $POSTDIR/src/Makefile
 ./compile
 
 #################################

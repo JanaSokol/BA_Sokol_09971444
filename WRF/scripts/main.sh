@@ -32,6 +32,7 @@ CONFIGDIR=$WRFROOT/config
 export LIBDIR=$WRFROOT/libs
 export LD_LIBRARY_PATH=$LIBDIR/netcdf/lib:$LD_LIBRARY_PATH
 export PATH=$LIBDIR/mpich/bin:$PATH
+export PATH=$WRFROOT/GrADs/Contents:$PATH
 
 #################################
 # remove previous created files
