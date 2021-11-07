@@ -28,6 +28,7 @@ WPSDIR=$WRFROOT/WPS
 WRFDIR=$WRFROOT/WRF-ARW
 SCRIPTDIR=$WRFROOT/scripts
 CONFIGDIR=$WRFROOT/config
+GEOGDIR=$WRFROOT/GEOG
 
 export LIBDIR=$WRFROOT/libs
 export LD_LIBRARY_PATH=$LIBDIR/netcdf/lib:$LD_LIBRARY_PATH
@@ -65,6 +66,8 @@ sed -i "s/ENDYEAR/$STARTYEAR/g" $WPSDIR/namelist.wps
 sed -i "s/ENDMONTH/$STARTMONTH/g" $WPSDIR/namelist.wps
 sed -i "s/ENDDAY/$STARTDAY/g" $WPSDIR/namelist.wps
 sed -i "s/ENDHOUR/$ENDHOUR/g" $WPSDIR/namelist.wps
+
+sed -i "s|GEOGPATH|$GEOGDIR|g" $WPSDIR/namelist.wps
 
 #################################
 # geogrid
