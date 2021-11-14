@@ -64,11 +64,25 @@ else
     echo "mc is already installed."
 fi
 
-#mc
+#pv
 if installed pv; then
     sudo apt install pv
 else
     echo "pv is already installed."
+fi
+
+#grads
+if installed grads; then
+    sudo apt install grads
+else
+    echo "grads is already installed."
+fi
+
+#cdo
+if installed cdo; then
+    sudo apt install cdo
+else
+    echo "cdo is already installed."
 fi
 
 #################################
@@ -204,7 +218,7 @@ sed -i "s/$search2/$replace2/g" $POSTDIR/src/Makefile
 #################################
 
 export PATH=$WRFROOT/GrADs/Contents:$PATH
-
+cp $WRFROOT/scripts/visualizeWRF.gs $WRFROOT/GrADs/Contents/Resources/Scripts/
 
 
 

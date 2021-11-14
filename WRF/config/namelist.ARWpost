@@ -1,14 +1,14 @@
 &datetime
  start_date = 'STARTYEAR-STARTMONTH-STARTDAY_STARTHOUR:00:00',
  end_date   = 'ENDYEAR-ENDMONTH-ENDDAY_ENDHOUR:00:00',
- interval_seconds = 10800,
+ interval_seconds = 3600,
  tacc = 0,
  debug_level = 0,
 /
 
 &io
- input_root_name = 'WRFPATH/run/wrfout_d01_2021-11-07_00:00:00'
- output_root_name = 'WRFPATH/run/arwpost_d01_2021-11-07_00:00:00'
+ input_root_name = 'WRFPATH/run/wrfout_d01_STARTYEAR-STARTMONTH-STARTDAY_STARTHOUR:00:00'
+ output_root_name = 'WRFPATH/run/ARWpost/arwpost_output'
  plot = 'all_list'
  fields = 'height,pressure,tk,tc'
  mercator_defs = .true.

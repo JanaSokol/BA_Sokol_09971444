@@ -1,13 +1,14 @@
 package com.BA_09971444.backend.service;
 
-import com.BA_09971444.backend.entity.DateTime;
+import com.BA_09971444.backend.entity.GFS;
 
 public interface WRFService {
 
     /**
-     * Gets the WRF output for a specific day.
+     * Gets the GFS output for a specific day.
      *
-     * @param dateTime to calculate by.
+     * @param gfs to create
+     * @return created gfs
      */
-    void getWRFOutputByDate(DateTime dateTime);
+    GFS getGFSOutputByDate(GFS gfs);
 }

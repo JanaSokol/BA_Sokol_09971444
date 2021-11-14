@@ -1,12 +1,17 @@
 package com.BA_09971444.backend.service.Impl;
 
-import com.BA_09971444.backend.entity.DateTime;
+import com.BA_09971444.backend.entity.GFS;
+import com.BA_09971444.backend.entity.GFSImage;
 import com.BA_09971444.backend.exception.InvalidDateException;
 import com.BA_09971444.backend.exception.WRFBuildFailedException;
+import com.BA_09971444.backend.repository.GFSImageRepository;
+import com.BA_09971444.backend.repository.GFSRepository;
 import com.BA_09971444.backend.service.WRFService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,45 +21,33 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class WRFServiceImpl implements WRFService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final GFSImageRepository gfsImageRepository;
+    private final GFSRepository gfsRepository;
 
-    public WRFServiceImpl() {
-
+    public WRFServiceImpl(GFSImageRepository gfsImageRepository, GFSRepository gfsRepository) {
+        this.gfsImageRepository = gfsImageRepository;
+        this.gfsRepository = gfsRepository;
     }
 
+    @Transactional
     @Override
-    public void getWRFOutputByDate(DateTime dateTime) {
-        LOGGER.debug("Get WRF Output by date: {} and cycle: {}", dateTime.getDate(), dateTime.getCycle());
+    public GFS getGFSOutputByDate(GFS gfs) {
+        LOGGER.debug("Get GFS Output {}", gfs);
 
-        // Run main script
-        runMainScript(dateTime.getDate(), dateTime.getCycle());
-    }
-
-    /**
-     * Runs main.sh.
-     * Runs geogrid if necessary.
-     * Executes ungrib, metgrid and WPS.
-     * Computes WRF output.
-     *
-     * @param date  date of file to download.
-     * @param cycle of file to download.
-     */
-    private void runMainScript(LocalDate date, Long cycle) {
-        LOGGER.debug("Run main.sh script");
         // Download data
-        downloadGFSData(date, cycle);
+        downloadGFSData(gfs.getStart(), gfs.getCycle());
+        // Run WPS and WRF
+        runWRF(gfs.getStart(), gfs.getCycle());
+        // Run Post Processing
+        return runPostScript(gfs);
 
-        // Creates processBuilder to run script
-        String[] command = new String[]{getScriptDirectory() + "/main.sh", String.valueOf(date.getDayOfMonth()), String.valueOf(date.getMonthValue()), String.valueOf(date.getYear()), (cycle > 9 ? String.valueOf(cycle) : "0" + cycle)};
-        try {
-            runProcess(command, false);
-        } catch (WRFBuildFailedException e) {
-            throw new WRFBuildFailedException("Running the main script failed." + e.getMessage());
-        }
     }
 
     /**
@@ -75,17 +68,72 @@ public class WRFServiceImpl implements WRFService {
     }
 
     /**
+     * Runs main.sh.
+     * Runs geogrid if necessary.
+     * Executes ungrib, metgrid and WPS.
+     * Computes WRF output.
+     *
+     * @param start date of file to download.
+     * @param cycle of file to download.
+     */
+    private void runWRF(LocalDate start, Long cycle) {
+        LOGGER.debug("Runs WPS and WRF");
+
+        // Creates processBuilder to run script
+        String[] command = new String[]{getScriptDirectory() + "/main.sh", String.valueOf(start.getDayOfMonth()), String.valueOf(start.getMonthValue()), String.valueOf(start.getYear()), (cycle > 9 ? String.valueOf(cycle) : "0" + cycle)};
+        try {
+            runProcess(command, false);
+        } catch (WRFBuildFailedException e) {
+            throw new WRFBuildFailedException("Running the main script failed." + e.getMessage());
+        }
+    }
+
+
+    /**
+     * Runs ARWpost and GrADS to visualize the WRF output.
+     *
+     * @param gfs to create
+     * @return created gfs
+     */
+    private GFS runPostScript(GFS gfs) {
+        LOGGER.debug("Run Post Processing");
+
+        // Creates processBuilder to run script
+        String[] command = new String[]{getScriptDirectory() + "/runPost.sh", String.valueOf(gfs.getStart().getDayOfMonth()), String.valueOf(gfs.getStart().getMonthValue()), String.valueOf(gfs.getStart().getYear()), (gfs.getCycle() > 9 ? String.valueOf(gfs.getCycle()) : "0" + gfs.getCycle())};
+        try {
+            runProcess(command, false);
+
+            Set<GFSImage> gfsImages = new HashSet<>();
+
+            for (int i = 0; i < 1; i++) {
+                ClassPathResource backImgFile = new ClassPathResource("gfs_images/" + i + ".png");
+                byte[] arrayPic = new byte[(int) backImgFile.contentLength()];
+                backImgFile.getInputStream().read(arrayPic);
+
+                GFSImage gfsImage = GFSImage.GFSImageBuilder.aGFSImage()
+                        .withImage(arrayPic)
+                        .build();
+
+                gfsImages.add(gfsImage);
+                gfsImageRepository.save(gfsImage);
+            }
+            gfs.setImages(gfsImages);
+            return gfsRepository.save(gfs);
+
+
+        } catch (WRFBuildFailedException | IOException e) {
+            throw new WRFBuildFailedException("Running the main script failed." + e.getMessage());
+        }
+    }
+
+    /**
      * Creates new process to run a bash script.
      *
      * @param command    to run right script.
      * @param isDownload true = script is used to download online data, false = script is used to run program.
      */
     private void runProcess(String[] command, boolean isDownload) {
-        if (isDownload) {
-            LOGGER.debug("Run Process with command: {} for the date: {}.{}.{} and cycle {}", command[0], command[3], command[2], command[1], command[4]);
-        } else {
-            LOGGER.debug("Run Process with command: {}", command[0]);
-        }
+        LOGGER.debug("Run Process with command: {} for the date: {}.{}.{} and cycle {}", command[0], command[3], command[2], command[1], command[4]);
 
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         try {

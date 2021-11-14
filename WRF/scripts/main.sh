@@ -82,7 +82,7 @@ if test -f "$FILE"; then
 else
     echo "create domain."
     ./geogrid.exe || exit_upon_error "geogrid.exe failed"
-    ln -s ungrib/Variable_Tables/Vtable.GFS ./Vtable
+    #ln -s ungrib/Variable_Tables/Vtable.GFS ./Vtable
 
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
     echo "!  Successful completion of geogrid.  ! "

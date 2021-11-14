@@ -1,7 +1,8 @@
 package com.BA_09971444.backend.endpoint;
 
-import com.BA_09971444.backend.endpoint.dto.DateTimeDto;
-import com.BA_09971444.backend.endpoint.mapper.WRFMapper;
+import com.BA_09971444.backend.endpoint.dto.LoadGFSDto;
+import com.BA_09971444.backend.endpoint.dto.OutputGFSDto;
+import com.BA_09971444.backend.endpoint.mapper.GFSMapper;
 import com.BA_09971444.backend.service.Impl.WRFServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,25 +25,25 @@ public class Endpoint {
     private final WRFServiceImpl wrfService;
 
     //Mapper
-    private final WRFMapper wrfMapper;
+    private final GFSMapper gfsMapper;
 
     @Autowired
-    public Endpoint(WRFServiceImpl wrfService, WRFMapper wrfMapper) {
+    public Endpoint(WRFServiceImpl wrfService, GFSMapper gfsMapper) {
         this.wrfService = wrfService;
-        this.wrfMapper = wrfMapper;
+        this.gfsMapper = gfsMapper;
     }
 
 
-    /*------------------------- WRF -------------------------*/
+    /*------------------------- GFS -------------------------*/
 
     /**
-     * Gets wrf output for a specific day.
+     * Gets gfs output for a specific day.
      */
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(path = "/wrf", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void getWRFOutputByDate(@RequestBody DateTimeDto dateTimeDto) {
-        LOGGER.info("GET /weather/wrf/{}", dateTimeDto);
+    @PostMapping(path = "/gfs", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public OutputGFSDto getWRFOutputByDate(@RequestBody LoadGFSDto loadGFSDto) {
+        LOGGER.info("GET /weather/gfs/{}", loadGFSDto);
 
-        wrfService.getWRFOutputByDate(wrfMapper.dateToDateTimeDto(dateTimeDto));
+        return gfsMapper.gfsToOutputGFSDto(wrfService.getGFSOutputByDate(gfsMapper.loadGFSDtoToGFS(loadGFSDto)));
     }
 }

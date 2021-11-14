@@ -1,0 +1,6 @@
+# Type     Name     Full path to shared object file
+# ----     ----     -------------------------------
+gxdisplay  Cairo    /home/jana/Documents/GitHub/BA_Sokol_09971444/WRF/GrADs/Contents/Linux/Versions/2.2.1.oga.1/x86_64/gex/libgxdCairo.so
+*
+gxprint    Cairo    /home/jana/Documents/GitHub/BA_Sokol_09971444/WRF/GrADs/Contents/Linux/Versions/2.2.1.oga.1/x86_64/gex/libgxpCairo.so
+
