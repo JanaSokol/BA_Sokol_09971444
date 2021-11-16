@@ -8,7 +8,7 @@ STARTDAY=$2
 STARTMONTH=$3
 STARTYEAR=$4
 STARTHOUR=$5
-ENDHOUR=06
+ENDHOUR=$6
 
 #################################
 # error handling
@@ -30,6 +30,11 @@ WRFDIR=$WRFROOT/WRF-ARW
 SCRIPTDIR=$WRFROOT/scripts
 CONFIGDIR=$WRFROOT/config/$TYPE
 GEOGDIR=$WRFROOT/GEOG
+
+OUTPUTDIR=$WRFDIR/run/$TYPE
+rm -rf $OUTPUTDIR
+mkdir $OUTPUTDIR
+
 
 export LIBDIR=$WRFROOT/libs
 export LD_LIBRARY_PATH=$LIBDIR/netcdf/lib:$LD_LIBRARY_PATH
@@ -85,10 +90,6 @@ if test -f "$FILE"; then
 else
     echo "create domain."
     ./geogrid.exe || exit_upon_error "geogrid.exe failed"
-
-    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
-    echo "!  Successful completion of geogrid.  ! "
-    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
 fi
 
 ln -s ungrib/Variable_Tables/Vtable.$TYPE ./Vtable
@@ -140,3 +141,4 @@ mpirun -n 3 ./wrf.exe || exit_upon_error "wrf.exe failed"
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
 echo "!    Successful completion of WRF.    ! "
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
+mv -v wrfout* $OUTPUTDIR

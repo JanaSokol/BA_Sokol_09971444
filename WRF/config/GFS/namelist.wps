@@ -27,9 +27,9 @@
 
 &ungrib
  out_format        = 'WPS',
- prefix            = 'FILE',
+ prefix            = 'GFS',
 /
 
 &metgrid
- fg_name           = 'FILE'
+ fg_name           = 'GFS'
 /
