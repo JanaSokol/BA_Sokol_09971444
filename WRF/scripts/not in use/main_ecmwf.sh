@@ -3,12 +3,11 @@
 #################################
 # input
 #################################
-TYPE=$1
-STARTDAY=$2
-STARTMONTH=$3
-STARTYEAR=$4
-STARTHOUR=$5
-ENDHOUR=06
+STARTYEAR=2021
+STARTDAY=11
+STARTMONTH=11
+STARTHOUR=06
+ENDHOUR=18
 
 #################################
 # error handling
@@ -28,7 +27,7 @@ WRFROOT=$ROOTDIR/WRF
 WPSDIR=$WRFROOT/WPS
 WRFDIR=$WRFROOT/WRF-ARW
 SCRIPTDIR=$WRFROOT/scripts
-CONFIGDIR=$WRFROOT/config/$TYPE
+CONFIGDIR=$WRFROOT/config/ECMWF
 GEOGDIR=$WRFROOT/GEOG
 
 export LIBDIR=$WRFROOT/libs
@@ -46,8 +45,8 @@ rm -rf $WPSDIR/ungrib.log
 rm -rf $WPSDIR/metgrid.log
 rm -rf $WPSDIR/GRIBFILE.*
 rm -rf $WPSDIR/namelist.wps
+rm -rf $WPSDIR/geo_em.d01.nc
 rm -rf $WPSDIR/Vtable
-rm -rf $WPSDIR/metgrid/METGRID.TBL.ARW
 # clean up WRF
 rm -rf $WRFDIR/run/wrfout*
 rm -rf $WRFDIR/run/wrfbdy*
@@ -85,18 +84,18 @@ if test -f "$FILE"; then
 else
     echo "create domain."
     ./geogrid.exe || exit_upon_error "geogrid.exe failed"
+    ln -s ungrib/Variable_Tables/Vtable.ERA-interim.pl ./Vtable
 
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
     echo "!  Successful completion of geogrid.  ! "
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
 fi
 
-ln -s ungrib/Variable_Tables/Vtable.$TYPE ./Vtable
+
 #################################
 # ungrib and metgrid
 #################################
-./link_grib.csh $WRFROOT/DATA/$TYPE/
-cp $CONFIGDIR/METGRID.TBL.ARW $WPSDIR/metgrid/METGRID.TBL.ARW
+./link_grib.csh $WRFROOT/ECMWF/
 echo " " 
 echo "*********** Running ungrib ************ "
 echo " " 
@@ -104,7 +103,9 @@ echo " "
 echo " " 
 echo "*********** Running metgrid *********** "
 echo " " 
-./metgrid.exe || exit_upon_error "metgrid.exe failed"
+#./metgrid.exe || exit_upon_error "metgrid.exe failed"
+
+: '
 
 #################################
 # update namelist.input
@@ -140,3 +141,4 @@ mpirun -n 3 ./wrf.exe || exit_upon_error "wrf.exe failed"
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
 echo "!    Successful completion of WRF.    ! "
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
+'

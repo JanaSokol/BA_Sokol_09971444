@@ -3,12 +3,11 @@
 #################################
 # input
 #################################
-TYPE=$1
-STARTDAY=$2
-STARTMONTH=$3
-STARTYEAR=$4
-STARTHOUR=$5
-ENDHOUR=06
+STARTYEAR=2021
+STARTDAY=11
+STARTMONTH=15
+STARTHOUR=00
+ENDHOUR=00
 
 #################################
 # error handling
@@ -28,7 +27,7 @@ WRFROOT=$ROOTDIR/WRF
 WPSDIR=$WRFROOT/WPS
 WRFDIR=$WRFROOT/WRF-ARW
 SCRIPTDIR=$WRFROOT/scripts
-CONFIGDIR=$WRFROOT/config/$TYPE
+CONFIGDIR=$WRFROOT/config/ICON
 GEOGDIR=$WRFROOT/GEOG
 
 export LIBDIR=$WRFROOT/libs
@@ -46,6 +45,7 @@ rm -rf $WPSDIR/ungrib.log
 rm -rf $WPSDIR/metgrid.log
 rm -rf $WPSDIR/GRIBFILE.*
 rm -rf $WPSDIR/namelist.wps
+rm -rf $WPSDIR/geo_em.d01.nc
 rm -rf $WPSDIR/Vtable
 rm -rf $WPSDIR/metgrid/METGRID.TBL.ARW
 # clean up WRF
@@ -85,17 +85,18 @@ if test -f "$FILE"; then
 else
     echo "create domain."
     ./geogrid.exe || exit_upon_error "geogrid.exe failed"
+    ln -s ungrib/Variable_Tables/Vtable.ICON ./Vtable
 
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
     echo "!  Successful completion of geogrid.  ! "
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
 fi
 
-ln -s ungrib/Variable_Tables/Vtable.$TYPE ./Vtable
+
 #################################
 # ungrib and metgrid
 #################################
-./link_grib.csh $WRFROOT/DATA/$TYPE/
+./link_grib.csh $WRFROOT/ICON/
 cp $CONFIGDIR/METGRID.TBL.ARW $WPSDIR/metgrid/METGRID.TBL.ARW
 echo " " 
 echo "*********** Running ungrib ************ "
@@ -105,6 +106,7 @@ echo " "
 echo "*********** Running metgrid *********** "
 echo " " 
 ./metgrid.exe || exit_upon_error "metgrid.exe failed"
+
 
 #################################
 # update namelist.input
@@ -140,3 +142,4 @@ mpirun -n 3 ./wrf.exe || exit_upon_error "wrf.exe failed"
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
 echo "!    Successful completion of WRF.    ! "
 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "
+

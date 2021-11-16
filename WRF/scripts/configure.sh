@@ -89,12 +89,13 @@ fi
 # unzip dependencies, WRF and WPS
 #################################
 cd $DOWNLOADSDIR
-sudo wget https://github.com/wrf-model/WRF/archive/refs/tags/v4.3.tar.gz -O ${DOWNLOADSDIR}/WRF.tar.gz
+sudo wget https://github.com/wrf-model/WRF/archive/refs/tags/v4.3.1.tar.gz -O ${DOWNLOADSDIR}/WRF.tar.gz
+sudo wget https://github.com/wrf-model/WPS/archive/refs/tags/v4.3.1.tar.gz -O ${DOWNLOADSDIR}/WPS.tar.gz
 sudo wget https://www2.mmm.ucar.edu/wrf/src/wps_files/geog_high_res_mandatory.tar.gz -O ${DOWNLOADSDIR}/GEOG.tar.gz
 echo "********** starting to unzip **********"
 for i in *.gz ; do pv $i | tar xz ; done
-mv -v WPS-4.3/ ../WPS
-mv -v WRF-4.3/ ../WRF-ARW
+mv -v WPS-4.3.1/ ../WPS
+mv -v WRF-4.3.1/ ../WRF-ARW
 mv -v ARWpost/ ../ARWpost
 mv -v opengrads-2.2.1.oga.1/ ../GrADs
 mv -v WPS_GEOG/ ../GEOG
@@ -105,6 +106,12 @@ mv -v WPS_GEOG/ ../GEOG
 cd $WRFROOT
 if [ ! -d "$WRFROOT/GFS" ]; then
     mkdir GFS
+fi
+if [ ! -d "$WRFROOT/ECMWF" ]; then
+    mkdir ECMWF
+fi
+if [ ! -d "$WRFROOT/ICON" ]; then
+    mkdir ICON
 fi
 if [ ! -d "$LIBSDIR" ]; then
     mkdir libs
@@ -186,7 +193,6 @@ export JASPERLIB=$LIBDIR/grib2/lib
 export JASPERINC=$LIBDIR/grib2/include
 cd $ARWDIR
 ./configure 
-cd ..
 ./compile em_real || exit_upon_error "wrf compile failed"
 export LD_LIBRARY_PATH=$NETCDF/lib:$LD_LIBRARY_PATH
 
@@ -194,7 +200,7 @@ export LD_LIBRARY_PATH=$NETCDF/lib:$LD_LIBRARY_PATH
 # WPS
 #################################
 cd $WPSDIR
-export WRF_DIR=$WRFDIR
+export WRF_DIR=$ARWDIR
 ./configure
 ./compile || exit_upon_error "wps compile failed"
 
@@ -219,6 +225,7 @@ sed -i "s/$search2/$replace2/g" $POSTDIR/src/Makefile
 
 export PATH=$WRFROOT/GrADs/Contents:$PATH
 cp $WRFROOT/scripts/visualizeWRF.gs $WRFROOT/GrADs/Contents/Resources/Scripts/
+cp $WRFROOT/config/udpt $WRFROOT/GrADs/
 
 
 

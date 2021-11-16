@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ROOTDIR=$(find $HOME -type d -name BA_Sokol_09971444)
-inputdir=$ROOTDIR/WRF/GFS/
+inputdir=$ROOTDIR/WRF/DATA/GFS/
 rm -rf $inputdir
 mkdir $inputdir
 

@@ -3,7 +3,7 @@
  max_dom           = 1,
  start_date        = 'STARTYEAR-STARTMONTH-STARTDAY_STARTHOUR:00:00',
  end_date          = 'ENDYEAR-ENDMONTH-ENDDAY_ENDHOUR:00:00',
- interval_seconds  = 21600
+ interval_seconds  = 10800
 /
 
 &geogrid
@@ -28,7 +28,6 @@
 &ungrib
  out_format        = 'WPS',
  prefix            = 'FILE',
- ec_rec_len        = 26214508,
 /
 
 &metgrid
