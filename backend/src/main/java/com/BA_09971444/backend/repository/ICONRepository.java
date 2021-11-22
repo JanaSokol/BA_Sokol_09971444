@@ -8,4 +8,6 @@ import java.time.LocalDate;
 public interface ICONRepository extends JpaRepository<ICON, Long> {
 
     Boolean existsICONByStartEquals(LocalDate date);
+
+    ICON findByStartEquals(LocalDate date);
 }

@@ -52,13 +52,6 @@ public class GFSImage {
     }
 
     @Override
-    public int hashCode() {
-        int result = Objects.hash(id, gfsSet);
-        result = 31 * result + Arrays.hashCode(image);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "GFSImage{" +
                 "id=" + id +

@@ -1,20 +1,13 @@
-package com.BA_09971444.backend.service.Impl;
+package com.BA_09971444.backend.service.impl;
 
-import com.BA_09971444.backend.entity.GFS;
-import com.BA_09971444.backend.entity.GFSImage;
-import com.BA_09971444.backend.entity.ICON;
-import com.BA_09971444.backend.entity.ICONImage;
 import com.BA_09971444.backend.exception.InvalidDateException;
 import com.BA_09971444.backend.exception.WRFBuildFailedException;
-import com.BA_09971444.backend.repository.GFSImageRepository;
-import com.BA_09971444.backend.repository.GFSRepository;
-import com.BA_09971444.backend.repository.ICONImageRepository;
-import com.BA_09971444.backend.repository.ICONRepository;
+import com.BA_09971444.backend.service.GFSService;
+import com.BA_09971444.backend.service.ICONService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,28 +19,22 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+// TODO : Exception Handling
 @Service
-public class ServiceImpl implements com.BA_09971444.backend.service.Impl.Service, ApplicationRunner {
+public class AutoService implements ApplicationRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private final GFSImageRepository gfsImageRepository;
-    private final GFSRepository gfsRepository;
-    private final ICONRepository iconRepository;
-    private final ICONImageRepository iconImageRepository;
-    private final Integer amountOfImages = 11;
+    private final GFSService gfsService;
+    private final ICONService iconService;
 
-    public ServiceImpl(GFSImageRepository gfsImageRepository, GFSRepository gfsRepository, ICONRepository iconRepository, ICONImageRepository iconImageRepository) {
-        this.gfsImageRepository = gfsImageRepository;
-        this.gfsRepository = gfsRepository;
-        this.iconRepository = iconRepository;
-        this.iconImageRepository = iconImageRepository;
+    public AutoService(GFSService gfsService, ICONService iconService) {
+        this.gfsService = gfsService;
+        this.iconService = iconService;
     }
 
     /**
@@ -76,16 +63,17 @@ public class ServiceImpl implements com.BA_09971444.backend.service.Impl.Service
             return 1;
         };
         Callable<Integer> icon_2 = () -> {
+            // TODO
             runWRF("icon");
             runPostScript("icon");
             return 2;
         };
 
-        if (!gfsRepository.existsGFSByStartEquals(LocalDate.now())) {
+        if (!gfsService.existsGFSByStartEquals(LocalDate.now())) {
             firstRun.add(gfs_1);
             secondRun.add(gfs_2);
         }
-        if (!iconRepository.existsICONByStartEquals(LocalDate.now())) {
+        if (!iconService.existsICONByStartEquals(LocalDate.now())) {
             firstRun.add(icon_1);
             secondRun.add(icon_2);
         }
@@ -94,19 +82,11 @@ public class ServiceImpl implements com.BA_09971444.backend.service.Impl.Service
                 executorService.invokeAll(firstRun);
                 executorService.invokeAll(secondRun);
             } catch (InterruptedException e) {
+                // TODO
                 e.printStackTrace();
             }
-
             executorService.shutdown();
         }
-    }
-
-    @Transactional
-    @Override
-    public GFS getGFSOutputByDate(GFS gfs) {
-        LOGGER.debug("Get GFS Output {}", gfs);
-        return null;
-
     }
 
     /**
@@ -115,7 +95,7 @@ public class ServiceImpl implements com.BA_09971444.backend.service.Impl.Service
      * @param type of model to download
      */
     private void downloadData(String type) {
-        LOGGER.debug("Downloading {} Data.", type);
+        LOGGER.debug("Downloading {} Data.", type.toUpperCase());
 
         String[] command = new String[]{getScriptDirectory() + "/" + type.toLowerCase() + "_download.sh",
                 String.valueOf(LocalDate.now().getDayOfMonth()), String.valueOf(LocalDate.now().getMonthValue()),
@@ -136,7 +116,7 @@ public class ServiceImpl implements com.BA_09971444.backend.service.Impl.Service
      * @param type of model to download
      */
     private void runWRF(String type) {
-        LOGGER.debug("Running WPS and WRF for {}.", type);
+        LOGGER.debug("Running WPS and WRF for {}.", type.toUpperCase());
 
         // Creates processBuilder to run script
         String[] command = new String[]{getScriptDirectory() + "/main.sh", type.toUpperCase(),
@@ -149,7 +129,6 @@ public class ServiceImpl implements com.BA_09971444.backend.service.Impl.Service
         }
     }
 
-
     /**
      * Runs ARWpost and GrADS to visualize the WRF output.
      *
@@ -157,7 +136,7 @@ public class ServiceImpl implements com.BA_09971444.backend.service.Impl.Service
      */
     @Transactional
     void runPostScript(String type) {
-        LOGGER.debug("Running post processing for {}.", type);
+        LOGGER.debug("Running post processing for {}.", type.toUpperCase());
 
         // Creates processBuilder to run script
         String[] command = new String[]{getScriptDirectory() + "/runPost.sh", type.toUpperCase(),
@@ -168,63 +147,16 @@ public class ServiceImpl implements com.BA_09971444.backend.service.Impl.Service
 
             switch (type) {
                 case "gfs":
-                    saveGFSImages();
+                    gfsService.saveGFSImages();
                     break;
                 case "icon":
-                    saveICONImages();
+                    iconService.saveICONImages();
                     break;
             }
 
-
-        } catch (WRFBuildFailedException | IOException e) {
-            System.out.println(e.getMessage());
+        } catch (WRFBuildFailedException e) {
             throw new WRFBuildFailedException("Running the post script failed." + e.getMessage());
         }
-    }
-
-    private void saveGFSImages() throws IOException {
-        LOGGER.debug("Saving GFS Images.");
-
-        Set<GFSImage> gfsImages = new HashSet<>();
-
-        for (int i = 1; i <= amountOfImages; i++) {
-            ClassPathResource backImgFile = new ClassPathResource("GFS_IMAGES/GFS_" + i + ".png");
-            byte[] arrayPic = new byte[(int) backImgFile.contentLength()];
-            backImgFile.getInputStream().read(arrayPic);
-            GFSImage gfsImage = GFSImage.GFSImageBuilder.aGFSImage()
-                    .withImage(arrayPic)
-                    .build();
-            gfsImages.add(gfsImage);
-            gfsImageRepository.save(gfsImage);
-        }
-        GFS gfs = GFS.GFSBuilder.aGFS()
-                .withStart(LocalDate.now())
-                .withImages(gfsImages)
-                .build();
-        gfsRepository.save(gfs);
-
-    }
-
-    private void saveICONImages() throws IOException {
-        LOGGER.debug("Saving ICON Images.");
-
-        Set<ICONImage> iconImages = new HashSet<>();
-
-        for (int i = 1; i <= amountOfImages; i++) {
-            ClassPathResource backImgFile = new ClassPathResource("ICON_IMAGES/ICON_" + i + ".png");
-            byte[] arrayPic = new byte[(int) backImgFile.contentLength()];
-            backImgFile.getInputStream().read(arrayPic);
-            ICONImage iconImage = ICONImage.ICONImageBuilder.aICONImage()
-                    .withImage(arrayPic)
-                    .build();
-            iconImages.add(iconImage);
-            iconImageRepository.save(iconImage);
-        }
-        ICON icon = ICON.ICONBuilder.anICON()
-                .withStart(LocalDate.now())
-                .withImages(iconImages)
-                .build();
-        iconRepository.save(icon);
     }
 
     /**

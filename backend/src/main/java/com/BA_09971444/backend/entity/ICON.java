@@ -51,11 +51,6 @@ public class ICON {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, start, images);
-    }
-
-    @Override
     public String toString() {
         return "ICON{" +
                 "id=" + id +

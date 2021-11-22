@@ -10,4 +10,7 @@ import java.time.LocalDate;
 public interface GFSRepository extends JpaRepository<GFS, Long> {
 
     Boolean existsGFSByStartEquals(LocalDate date);
+
+    GFS findByStartEquals(LocalDate date);
+
 }
