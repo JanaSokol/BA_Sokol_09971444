@@ -3,7 +3,7 @@ package com.BA_09971444.backend.endpoint;
 import com.BA_09971444.backend.endpoint.dto.LoadGFSDto;
 import com.BA_09971444.backend.endpoint.dto.OutputGFSDto;
 import com.BA_09971444.backend.endpoint.mapper.GFSMapper;
-import com.BA_09971444.backend.service.Impl.WRFServiceImpl;
+import com.BA_09971444.backend.service.Impl.ServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +22,13 @@ public class Endpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // Services
-    private final WRFServiceImpl wrfService;
+    private final ServiceImpl wrfService;
 
     //Mapper
     private final GFSMapper gfsMapper;
 
     @Autowired
-    public Endpoint(WRFServiceImpl wrfService, GFSMapper gfsMapper) {
+    public Endpoint(ServiceImpl wrfService, GFSMapper gfsMapper) {
         this.wrfService = wrfService;
         this.gfsMapper = gfsMapper;
     }

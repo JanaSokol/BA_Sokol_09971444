@@ -7,8 +7,10 @@ TYPE=$1
 STARTDAY=$2
 STARTMONTH=$3
 STARTYEAR=$4
-STARTHOUR=$5
-ENDHOUR=$6
+STARTHOUR=00
+ENDHOUR=120 # default 120
+time_step=12 
+time_step_in_seconds=$(($time_step * 3600))
 
 #################################
 # error handling
@@ -35,7 +37,6 @@ OUTPUTDIR=$WRFDIR/run/$TYPE
 rm -rf $OUTPUTDIR
 mkdir $OUTPUTDIR
 
-
 export LIBDIR=$WRFROOT/libs
 export LD_LIBRARY_PATH=$LIBDIR/netcdf/lib:$LD_LIBRARY_PATH
 export PATH=$LIBDIR/mpich/bin:$PATH
@@ -45,7 +46,7 @@ export PATH=$WRFROOT/GrADs/Contents:$PATH
 # remove previous created files
 #################################
 # clean up WPS
-rm -rf $WPSDIR/FILE:*
+rm -rf $WPSDIR/$TYPE:*
 rm -rf $WPSDIR/met_em*
 rm -rf $WPSDIR/ungrib.log
 rm -rf $WPSDIR/metgrid.log
@@ -62,6 +63,49 @@ rm -rf $WRFDIR/run/met_em*
 rm -rf $WRFDIR/run/namelist.input
 
 #################################
+# calculating end
+#################################
+OLDENDHOUR=$ENDHOUR
+TEMPENDHOUR=$(($ENDHOUR % 24))
+TEMP=$(($ENDHOUR/24))
+ENDHOUR=`printf "%02d\n" "${TEMPENDHOUR}"`
+ENDDAY=$(($TEMP+STARTDAY))
+ENDMONTH=$STARTMONTH
+ENDYEAR=$STARTYEAR
+
+case $STARTMONTH  in
+    "1"|"3"|"5"|"7"|"8"|"10")
+         if (($ENDDAY > 31 )) 
+         then 
+            echo "case 1"
+            ENDDAY=$(($ENDDAY-31))
+            ENDMONTH=$(($ENDMONTH+1))
+         fi;;
+    "4"|"6"|"9"|"11") 
+         if (($ENDDAY > 30 )) 
+         then 
+            echo "case 2"
+            ENDDAY=$(($ENDDAY-30))
+            ENDMONTH=$(($ENDMONTH+1))
+         fi;;
+    "2") 
+         if (($ENDDAY > 28 )) 
+         then 
+            echo "case 3"
+            ENDDAY=$(($ENDDAY-28))
+            ENDMONTH=$(($ENDMONTH+1))
+         fi;;
+    "12") 
+         if (($ENDDAY > 31 )) 
+         then 
+            echo "case 4"
+            ENDDAY=$(($ENDDAY-31))
+            ENDMONTH=1
+            ENDYEAR=$(($STARTYEAR+1))
+         fi;;
+    *) echo "Wrong Month"; exit 1 ;;
+esac
+#################################
 # update namelist.wps
 #################################
 cp $CONFIGDIR/namelist.wps $WPSDIR/namelist.wps
@@ -70,12 +114,13 @@ sed -i "s/STARTDAY/$STARTDAY/g" $WPSDIR/namelist.wps
 sed -i "s/STARTMONTH/$STARTMONTH/g" $WPSDIR/namelist.wps
 sed -i "s/STARTHOUR/$STARTHOUR/g" $WPSDIR/namelist.wps
 
-sed -i "s/ENDYEAR/$STARTYEAR/g" $WPSDIR/namelist.wps
-sed -i "s/ENDMONTH/$STARTMONTH/g" $WPSDIR/namelist.wps
-sed -i "s/ENDDAY/$STARTDAY/g" $WPSDIR/namelist.wps
+sed -i "s/ENDYEAR/$ENDYEAR/g" $WPSDIR/namelist.wps
+sed -i "s/ENDMONTH/$ENDMONTH/g" $WPSDIR/namelist.wps
+sed -i "s/ENDDAY/$ENDDAY/g" $WPSDIR/namelist.wps
 sed -i "s/ENDHOUR/$ENDHOUR/g" $WPSDIR/namelist.wps
 
 sed -i "s|GEOGPATH|$GEOGDIR|g" $WPSDIR/namelist.wps
+sed -i "s/INTERVAL/$time_step_in_seconds/g" $WPSDIR/namelist.wps
 
 #################################
 # geogrid
@@ -116,10 +161,13 @@ sed -i "s/STARTDAY/$STARTDAY/g" $WRFDIR/run/namelist.input
 sed -i "s/STARTMONTH/$STARTMONTH/g" $WRFDIR/run/namelist.input
 sed -i "s/STARTHOUR/$STARTHOUR/g" $WRFDIR/run/namelist.input
 
-sed -i "s/ENDYEAR/$STARTYEAR/g" $WRFDIR/run/namelist.input
-sed -i "s/ENDDAY/$STARTDAY/g" $WRFDIR/run/namelist.input
-sed -i "s/ENDMONTH/$STARTMONTH/g" $WRFDIR/run/namelist.input
+sed -i "s/ENDYEAR/$ENDYEAR/g" $WRFDIR/run/namelist.input
+sed -i "s/ENDDAY/$ENDDAY/g" $WRFDIR/run/namelist.input
+sed -i "s/ENDMONTH/$ENDMONTH/g" $WRFDIR/run/namelist.input
 sed -i "s/ENDHOUR/$ENDHOUR/g" $WRFDIR/run/namelist.input
+
+sed -i "s/INTERVAL/$time_step_in_seconds/g" $WRFDIR/run/namelist.input
+sed -i "s/RUNHOURS/$OLDENDHOUR/g" $WRFDIR/run/namelist.input
 
 #################################
 # wrf

@@ -1,6 +1,6 @@
  &time_control
  run_days                            = 0,
- run_hours                           = 6,
+ run_hours                           = RUNHOURS,
  run_minutes                         = 0,
  run_seconds                         = 0,
  start_year                          = STARTYEAR,
@@ -11,7 +11,7 @@
  end_month                           = ENDMONTH,
  end_day                             = ENDDAY,
  end_hour                            = ENDHOUR,
- interval_seconds                    = 10800
+ interval_seconds                    = INTERVAL,
  input_from_file                     = .true.,
  history_interval                    = 60,
  frames_per_outfile                  = 1000,

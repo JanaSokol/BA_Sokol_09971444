@@ -2,12 +2,11 @@ package com.BA_09971444.backend.entity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
-public class GFS {
+public class ICON {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,8 +15,8 @@ public class GFS {
     private LocalDate start;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "GFS_IMAGE_ASSOCIATION")
-    private Set<GFSImage> images;
+    @JoinTable(name = "ICON_IMAGE_ASSOCIATION")
+    private Set<ICONImage> images;
 
     public Long getId() {
         return id;
@@ -35,11 +34,11 @@ public class GFS {
         this.start = start;
     }
 
-    public Set<GFSImage> getImages() {
+    public Set<ICONImage> getImages() {
         return images;
     }
 
-    public void setImages(Set<GFSImage> images) {
+    public void setImages(Set<ICONImage> images) {
         this.images = images;
     }
 
@@ -47,8 +46,8 @@ public class GFS {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GFS gfs = (GFS) o;
-        return Objects.equals(id, gfs.id) && Objects.equals(start, gfs.start) && Objects.equals(images, gfs.images);
+        ICON icon = (ICON) o;
+        return Objects.equals(id, icon.id) && Objects.equals(start, icon.start) && Objects.equals(images, icon.images);
     }
 
     @Override
@@ -58,46 +57,46 @@ public class GFS {
 
     @Override
     public String toString() {
-        return "GFS{" +
+        return "ICON{" +
                 "id=" + id +
                 ", start=" + start +
                 ", images=" + images +
                 '}';
     }
 
-    public static final class GFSBuilder {
+    public static final class ICONBuilder {
         private Long id;
         private LocalDate start;
-        private Set<GFSImage> images;
+        private Set<ICONImage> images;
 
-        private GFSBuilder() {
+        private ICONBuilder() {
         }
 
-        public static GFSBuilder aGFS() {
-            return new GFSBuilder();
+        public static ICONBuilder anICON() {
+            return new ICONBuilder();
         }
 
-        public GFSBuilder withId(Long id) {
+        public ICONBuilder withId(Long id) {
             this.id = id;
             return this;
         }
 
-        public GFSBuilder withStart(LocalDate start) {
+        public ICONBuilder withStart(LocalDate start) {
             this.start = start;
             return this;
         }
 
-        public GFSBuilder withImages(Set<GFSImage> images) {
+        public ICONBuilder withImages(Set<ICONImage> images) {
             this.images = images;
             return this;
         }
 
-        public GFS build() {
-            GFS gfs = new GFS();
-            gfs.setId(id);
-            gfs.setStart(start);
-            gfs.setImages(images);
-            return gfs;
+        public ICON build() {
+            ICON icon = new ICON();
+            icon.setId(id);
+            icon.setStart(start);
+            icon.setImages(images);
+            return icon;
         }
     }
 }

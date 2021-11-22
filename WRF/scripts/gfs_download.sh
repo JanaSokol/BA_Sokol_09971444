@@ -8,10 +8,10 @@ mkdir $inputdir
 day=$1
 month=$2
 year=$3
-cycle=$4
-time_step=3        # must be a multiple of 3
-time_step_start=0
-time_step_end=24    # max 384
+time_step_start=00
+time_step_end=120    # max 384, default 120
+time_step=12        # must be a multiple of 3
+cycle=00
 
 
 #################################
@@ -39,6 +39,7 @@ do
 
     echo $url
 
-    wget -O ${inputdir}/${outfile} ${url} || exit_upon_error "download failed"
+    wget -O ${inputdir}${outfile} ${url} || exit_upon_error "download failed"
 
 done
+exit 0

@@ -31,18 +31,17 @@ file_conf=$1
 #################################
 # input
 #################################
-year=$3
-month=$2
 day=$1
+month=$2
+year=$3
+time_step_start=0
+time_step_end=120   # max 120, default 120
+time_step=12        # must be a multiple of 3
 cycle=00
+
+START_DATE=$year$month$day$cycle
 ROOTDIR=$(find $HOME -type d -name BA_Sokol_09971444)
 dirOutg=$ROOTDIR/WRF/DATA/ICON/
-START_DATE=$year$month$day$cycle
-
-time_step=3        # must be a multiple of 3
-time_step_start=0
-time_step_end=24    # max 384
-
 rm -rf $dirOutg
 mkdir $dirOutg
 
@@ -188,14 +187,55 @@ do
    
 
     #Calculate correct date and time
-    ttime=$(($i%24))
-    time=`printf "%02d\n" "${ttime}"`
-    # TODO tday=$(($i/24))
+    TEMPENDHOUR=$(($i % 24))
+    TEMP=$(($i/24))
+    ENDDAY=$(($TEMP+day))
+    ENDMONTH=$month
+    ENDYEAR=$year
 
-    start_date=""$year"-"$month"-"$day""
+    case $month  in
+        "1"|"3"|"5"|"7"|"8"|"10")
+             if (($ENDDAY > 31 )) 
+             then 
+                echo "case 1"
+                ENDDAY=$(($ENDDAY-31))
+                ENDMONTH=$(($ENDMONTH+1))
+             fi;;
+        "4"|"6"|"9"|"11") 
+             if (($ENDDAY > 30 )) 
+             then 
+                echo "case 2"
+                ENDDAY=$(($ENDDAY-30))
+                ENDMONTH=$(($ENDMONTH+1))
+             fi;;
+        "2") 
+             if (($ENDDAY > 28 )) 
+             then 
+                echo "case 3"
+                ENDDAY=$(($ENDDAY-28))
+                ENDMONTH=$(($ENDMONTH+1))
+             fi;;
+        "12") 
+             if (($ENDDAY > 31 )) 
+             then 
+                echo "case 4"
+                ENDDAY=$(($ENDDAY-31))
+                ENDMONTH=1
+                ENDYEAR=$(($year+1))
+             fi;;
+        *) echo "Wrong Month"; exit 1 ;;
+    esac    
+
+    ENDHOUR=`printf "%02d\n" "${TEMPENDHOUR}"`
+    ENDDAY=`printf "%02d\n" "${ENDDAY}"`
+    ENDMONTH=`printf "%02d\n" "${ENDMONTH}"`
+    ENDYEAR=`printf "%04d\n" "${ENDYEAR}"`
+
+    start_date=""$ENDYEAR"-"$ENDMONTH"-"$ENDDAY""
     date=$(date +%Y-%m-%d -d "$start_date")
 
     cat ${dirOut}/*.grib2 > ${dirOut}/ICON-EU_${START_DATE}_${czas}t.grib
-    cdo -setdate,"$date" -settime,"$ttime":00:00 ${dirOut}/ICON-EU_${START_DATE}_${czas}t.grib ${outfilegrib2}
+    cdo -setdate,"$date" -settime,"$ENDHOUR":00:00 ${dirOut}/ICON-EU_${START_DATE}_${czas}t.grib ${outfilegrib2}
     rm -rf ${dirOut}
 done
+exit 0

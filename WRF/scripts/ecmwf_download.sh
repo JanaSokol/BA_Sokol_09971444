@@ -95,7 +95,6 @@ set filelist = ( \
     ec.oper.fc.sfc/$year$month/ec.oper.fc.sfc.128_034_sstk.regn1280sc.$year$month$day.grb \
 #   Snow depth (m of water equivalent)	
     ec.oper.fc.sfc/$year$month/ec.oper.fc.sfc.128_141_sd.regn1280sc.$year$month$day.grb \
-: '
 #   Snow albedo	
     ec.oper.fc.sfc/$year$month/ec.oper.fc.sfc.128_032_asn.regn1280sc.$year$month$day.grb \
 #   Snow density
@@ -219,7 +218,7 @@ set filelist = ( \
 #   Wind gust at 10 metres (m s-1)	
     ec.oper.fc.sfc/$year$month/ec.oper.fc.sfc.128_049_10fg.regn1280sc.$year$month$day.grb \
 #   10 metre wind gust in the past 6 hours (m s-1)	
-    ec.oper.fc.sfc/$year$month/ec.oper.fc.sfc.128_123_10fg6.regn1280sc.$year$month$day.grb \ '
+    ec.oper.fc.sfc/$year$month/ec.oper.fc.sfc.128_123_10fg6.regn1280sc.$year$month$day.grb \
 )
 while($#filelist > 0)
  set syscmd = "$opt2$filelist[1]"
