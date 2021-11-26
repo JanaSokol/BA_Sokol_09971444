@@ -2,8 +2,6 @@ package com.BA_09971444.backend.entity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -16,39 +14,31 @@ public class GFS {
     private LocalDate start;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "GFS_IMAGE_ASSOCIATION")
-    private Set<GFSImage> images;
+    @JoinTable(name = "GFS_GRADS_IMAGE_ASSOCIATION")
+    private Set<GFSImage> gradsImages;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDate getStart() {
-        return start;
-    }
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "GFS_NCL_IMAGE_ASSOCIATION")
+    private Set<GFSImage> nclImages;
 
     public void setStart(LocalDate start) {
         this.start = start;
     }
 
-    public Set<GFSImage> getImages() {
-        return images;
+    public Set<GFSImage> getGradsImages() {
+        return gradsImages;
     }
 
-    public void setImages(Set<GFSImage> images) {
-        this.images = images;
+    public void setGradsImages(Set<GFSImage> gradsImages) {
+        this.gradsImages = gradsImages;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GFS gfs = (GFS) o;
-        return Objects.equals(id, gfs.id) && Objects.equals(start, gfs.start) && Objects.equals(images, gfs.images);
+    public Set<GFSImage> getNclImages() {
+        return nclImages;
+    }
+
+    public void setNclImages(Set<GFSImage> nclImages) {
+        this.nclImages = nclImages;
     }
 
     @Override
@@ -56,14 +46,15 @@ public class GFS {
         return "GFS{" +
                 "id=" + id +
                 ", start=" + start +
-                ", images=" + images +
+                ", gradsImages=" + gradsImages +
+                ", nclImages=" + nclImages +
                 '}';
     }
 
     public static final class GFSBuilder {
-        private Long id;
         private LocalDate start;
-        private Set<GFSImage> images;
+        private Set<GFSImage> gradsImages;
+        private Set<GFSImage> nclImages;
 
         private GFSBuilder() {
         }
@@ -72,26 +63,26 @@ public class GFS {
             return new GFSBuilder();
         }
 
-        public GFSBuilder withId(Long id) {
-            this.id = id;
-            return this;
-        }
-
         public GFSBuilder withStart(LocalDate start) {
             this.start = start;
             return this;
         }
 
-        public GFSBuilder withImages(Set<GFSImage> images) {
-            this.images = images;
+        public GFSBuilder withGradsImages(Set<GFSImage> gradsImages) {
+            this.gradsImages = gradsImages;
+            return this;
+        }
+
+        public GFSBuilder withNclImages(Set<GFSImage> nclImages) {
+            this.nclImages = nclImages;
             return this;
         }
 
         public GFS build() {
             GFS gfs = new GFS();
-            gfs.setId(id);
             gfs.setStart(start);
-            gfs.setImages(images);
+            gfs.setGradsImages(gradsImages);
+            gfs.setNclImages(nclImages);
             return gfs;
         }
     }

@@ -1,11 +1,53 @@
-<div class="container-fluid p-5 bg-secondary">
-  <div class="container p-5 bg-secondary">
-    <p>main-page works!</p>
-    <!--Load More Button-->
-    <div class="d-flex justify-content-center mb-3">
-      <button type="button" (click)="runMainScript()" class="btn btn-outline-danger">
-        run
-      </button>
+<div class="pt-5 mb-3">
+  <!--Heading-->
+  <div class="row justify-content-center align-items-center mt-3 pb-2">
+    <div class="col-auto">
+      <h2 class="mb-0">Weather Models</h2>
     </div>
   </div>
+
+  <div>
+    <form class="form d-flex justify-content-center w-50 mx-auto mt-2 mb-1" [formGroup]="form"
+          (change)="getOutputByTime()">
+      <select class="form-select w-50 me-5" aria-label="Default select example" formControlName="visType">
+        <option value="1">GrADs</option>
+        <option value="2">NCL</option>
+        <option value="3">RIP</option>
+      </select>
+
+      <select class="form-select w-50 ms-5" aria-label="Default select example" formControlName="date">
+        <option *ngFor="let date of this.dates; let i = index" value="{{i}}">{{date}}</option>
+      </select>
+    </form>
+
+    <div class="d-flex justify-content-between">
+      <app-weather-model *ngIf="gfs" class="w-50" [images]="gfs.images" [index]="this.index"></app-weather-model>
+      <app-weather-model *ngIf="icon" class="w-50" [images]="icon.images" [index]="this.index"></app-weather-model>
+    </div>
+
+    <div class="d-flex justify-content-center w-50 mx-auto mt-5">
+      <button [disabled]="this.index == 0 " type="button"
+              class="btn btn-outline-primary flex-fill me-5 d-flex align-items-center justify-content-center"
+              (click)="previous()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24"
+             fill="none">
+          <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <span class="d-flex align-items-center">{{this.index + 1}}/{{this.gfs.images.length}} time steps</span>
+      <button [disabled]="this.index == this.gfs.images.length - 1" type="button"
+              class="btn btn-outline-primary flex-fill ms-5"
+              (click)="next()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24"
+             fill="none">
+          <path d="M9 6L15 12L9 18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+
+  </div>
+
 </div>
+
+

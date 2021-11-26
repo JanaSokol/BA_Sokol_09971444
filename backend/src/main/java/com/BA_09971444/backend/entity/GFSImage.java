@@ -1,8 +1,7 @@
 package com.BA_09971444.backend.entity;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.Objects;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -16,53 +15,35 @@ public class GFSImage {
     @Column(nullable = false)
     private byte[] image;
 
-    @ManyToMany(mappedBy = "images")
-    private Set<GFS> gfsSet;
+    @Column(nullable = false)
+    private LocalDateTime dateTime;
 
-    public Long getId() {
-        return id;
-    }
+    @ManyToMany(mappedBy = "gradsImages")
+    private Set<GFS> gradsSet;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
+    @ManyToMany(mappedBy = "nclImages")
+    private Set<GFS> nclSet;
 
     public void setImage(byte[] image) {
         this.image = image;
     }
 
-    public Set<GFS> getGfsSet() {
-        return gfsSet;
-    }
-
-    public void setGfsSet(Set<GFS> gfsSet) {
-        this.gfsSet = gfsSet;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GFSImage gfsImage = (GFSImage) o;
-        return Objects.equals(id, gfsImage.id) && Arrays.equals(image, gfsImage.image) && Objects.equals(gfsSet, gfsImage.gfsSet);
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
     @Override
     public String toString() {
         return "GFSImage{" +
                 "id=" + id +
-                ", Image=" + Arrays.toString(image) +
-                ", gfsSet=" + gfsSet +
+                ", image=" + image.length +
+                ", dateTime=" + dateTime +
                 '}';
     }
 
     public static final class GFSImageBuilder {
-        private Long id;
         private byte[] image;
+        private LocalDateTime dateTime;
 
         private GFSImageBuilder() {
         }
@@ -71,20 +52,20 @@ public class GFSImage {
             return new GFSImageBuilder();
         }
 
-        public GFSImageBuilder withId(Long id) {
-            this.id = id;
-            return this;
-        }
-
         public GFSImageBuilder withImage(byte[] image) {
             this.image = image;
             return this;
         }
 
+        public GFSImageBuilder withDateTime(LocalDateTime dateTime) {
+            this.dateTime = dateTime;
+            return this;
+        }
+
         public GFSImage build() {
             GFSImage gfsImage = new GFSImage();
-            gfsImage.setId(id);
             gfsImage.setImage(image);
+            gfsImage.setDateTime(dateTime);
             return gfsImage;
         }
     }

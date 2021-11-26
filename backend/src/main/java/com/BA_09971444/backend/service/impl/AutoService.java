@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +23,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-// TODO : Exception Handling
 @Service
 public class AutoService implements ApplicationRunner {
 
@@ -63,7 +61,6 @@ public class AutoService implements ApplicationRunner {
             return 1;
         };
         Callable<Integer> icon_2 = () -> {
-            // TODO
             runWRF("icon");
             runPostScript("icon");
             return 2;
@@ -77,13 +74,14 @@ public class AutoService implements ApplicationRunner {
             firstRun.add(icon_1);
             secondRun.add(icon_2);
         }
-        if (!firstRun.isEmpty()) {
+        if (!secondRun.isEmpty()) {
             try {
                 executorService.invokeAll(firstRun);
                 executorService.invokeAll(secondRun);
-            } catch (InterruptedException e) {
-                // TODO
-                e.printStackTrace();
+                gfsService.saveGFSImages(LocalDate.now());
+                iconService.saveICONImages(LocalDate.now());
+            } catch (WRFBuildFailedException | InterruptedException e) {
+                LOGGER.error(e.getMessage());
             }
             executorService.shutdown();
         }
@@ -134,28 +132,23 @@ public class AutoService implements ApplicationRunner {
      *
      * @param type of model to download
      */
-    @Transactional
-    void runPostScript(String type) {
+    private void runPostScript(String type) {
         LOGGER.debug("Running post processing for {}.", type.toUpperCase());
 
         // Creates processBuilder to run script
-        String[] command = new String[]{getScriptDirectory() + "/runPost.sh", type.toUpperCase(),
+        String[] command_grads = new String[]{getScriptDirectory() + "/runGrADs.sh", type.toUpperCase(),
+                String.valueOf(LocalDate.now().getDayOfMonth()), String.valueOf(LocalDate.now().getMonthValue()),
+                String.valueOf(LocalDate.now().getYear())};
+
+        String[] command_ncl = new String[]{getScriptDirectory() + "/runNCL.sh", type.toUpperCase(),
                 String.valueOf(LocalDate.now().getDayOfMonth()), String.valueOf(LocalDate.now().getMonthValue()),
                 String.valueOf(LocalDate.now().getYear())};
         try {
-            runProcess(command, false, type + "_runPost");
-
-            switch (type) {
-                case "gfs":
-                    gfsService.saveGFSImages();
-                    break;
-                case "icon":
-                    iconService.saveICONImages();
-                    break;
-            }
+            runProcess(command_grads, false, type + "_runGrADs");
+            runProcess(command_ncl, false, type + "_runNCL");
 
         } catch (WRFBuildFailedException e) {
-            throw new WRFBuildFailedException("Running the post script failed." + e.getMessage());
+            LOGGER.error("Running the post script failed." + e.getMessage());
         }
     }
 
@@ -176,7 +169,9 @@ public class AutoService implements ApplicationRunner {
                     .start();
 
             int exitCode = process.waitFor();
+
             if (exitCode != 0 && isDownload) throw new InvalidDateException("Invalid date given.");
+            LOGGER.info("Finished Process with command: {}.", command[0]);
         } catch (IOException | InterruptedException e) {
             throw new WRFBuildFailedException(e.getMessage());
         }

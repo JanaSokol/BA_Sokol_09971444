@@ -16,12 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// TODO Exception Handling
 @Service
 public class GFSServiceImpl implements GFSService {
 
@@ -34,14 +34,12 @@ public class GFSServiceImpl implements GFSService {
         this.gfsRepository = gfsRepository;
     }
 
-    @Transactional
     @Override
-    public List<GFSImage> getGFSOutputByDate(LocalDate date) {
+    public GFS getGFSOutputByDate(LocalDate date) {
         LOGGER.debug("Get GFS Output by date {}", date);
 
         try {
-            GFS gfs = gfsRepository.findByStartEquals(date);
-            return new ArrayList<>(gfs.getImages());
+            return gfsRepository.findByStartEquals(date);
         } catch (DataAccessException e) {
             throw new NotFoundException(String.format("Could not find gfs with date %s", date));
         }
@@ -49,36 +47,74 @@ public class GFSServiceImpl implements GFSService {
 
     @Transactional
     @Override
-    public void saveGFSImages() {
+    public void saveGFSImages(LocalDate date) {
         LOGGER.debug("Saving GFS Images.");
 
-        Set<GFSImage> gfsImages = new HashSet<>();
+        Set<GFSImage> gradsImages = new HashSet<>();
+        Set<GFSImage> nclImages = new HashSet<>();
         try {
             int amountOfImages = 11;
-            for (int i = 1; i <= amountOfImages; i++) {
-                ClassPathResource backImgFile = new ClassPathResource("GFS_IMAGES/GFS_" + i + ".png");
-                byte[] arrayPic = new byte[(int) backImgFile.contentLength()];
+            int cycle = 0;
+            int timeStep = 12;
 
-                backImgFile.getInputStream().read(arrayPic);
-                GFSImage gfsImage = GFSImage.GFSImageBuilder.aGFSImage()
-                        .withImage(arrayPic)
-                        .build();
-                gfsImages.add(gfsImage);
-                gfsImageRepository.save(gfsImage);
+            for (int i = 0; i < amountOfImages; i++) {
+                gradsImages.add(saveIndividualImage(date, cycle, "GFS_IMAGES/GFS_GrADs_" + (i + 1) + ".png"));
+                nclImages.add(saveIndividualImage(date, cycle,
+                        "GFS_IMAGES/GFS_NCL.0000" + ((i + 1 >= 10) ? "" : "0") + (i + 1) + ".png"));
+                cycle = (cycle + timeStep) % 24;
+                date = cycle % 24 == 0 ? date.plusDays(1) : date;
             }
             GFS gfs = GFS.GFSBuilder.aGFS()
                     .withStart(LocalDate.now())
-                    .withImages(gfsImages)
+                    .withGradsImages(gradsImages)
+                    .withNclImages(nclImages)
                     .build();
             gfsRepository.save(gfs);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
+    }
+
+    /**
+     * Loads and saves image to the repository.
+     *
+     * @param date     of image.
+     * @param cycle    of image.
+     * @param filename to search by.
+     * @return the loaded image.
+     */
+    private GFSImage saveIndividualImage(LocalDate date, int cycle, String filename) throws IOException {
+        LocalDateTime localDateTime = LocalDateTime.of(date, LocalTime.of(cycle, 0));
+        ClassPathResource backImgFileGRADS = new ClassPathResource(filename);
+        byte[] arrayPic = new byte[(int) backImgFileGRADS.contentLength()];
+
+        backImgFileGRADS.getInputStream().read(arrayPic);
+        GFSImage gfsImage = GFSImage.GFSImageBuilder.aGFSImage()
+                .withImage(arrayPic)
+                .withDateTime(localDateTime)
+                .build();
+        gfsImageRepository.save(gfsImage);
+        return gfsImage;
     }
 
     @Override
     public boolean existsGFSByStartEquals(LocalDate date) {
-        return gfsRepository.existsGFSByStartEquals(date);
+        LOGGER.debug("Check if GFS with {} exists.", date);
+        try {
+            return gfsRepository.existsGFSByStartEquals(date);
+        } catch (DataAccessException e) {
+            throw new NotFoundException(String.format("Could not find gfs with date %s", date));
+        }
     }
 
+    @Override
+    public List<LocalDate> getAvailableDates() {
+        LOGGER.debug("Get available dates.");
+
+        try {
+            return gfsRepository.getAllDates();
+        } catch (DataAccessException e) {
+            throw new NotFoundException("Database is empty.");
+        }
+    }
 }

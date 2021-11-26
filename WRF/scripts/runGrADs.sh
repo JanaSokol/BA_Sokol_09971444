@@ -41,29 +41,29 @@ case $STARTMONTH  in
          if (($ENDDAY > 31 )) 
          then 
             echo "case 1"
-            ENDDAY=$(($ENDDAY-31))
-            ENDMONTH=$(($ENDMONTH+1))
+            ENDDAY=`printf "%02d\n" "$(($ENDDAY-31))"`
+            ENDMONTH=`printf "%02d\n" "$(($ENDMONTH+1))"`
          fi;;
     "4"|"6"|"9"|"11") 
          if (($ENDDAY > 30 )) 
          then 
             echo "case 2"
-            ENDDAY=$(($ENDDAY-30))
-            ENDMONTH=$(($ENDMONTH+1))
+            ENDDAY=`printf "%02d\n" "$(($ENDDAY-30))"`
+            ENDMONTH=`printf "%02d\n" "$(($ENDMONTH+1))"`
          fi;;
     "2") 
          if (($ENDDAY > 28 )) 
          then 
             echo "case 3"
-            ENDDAY=$(($ENDDAY-28))
-            ENDMONTH=$(($ENDMONTH+1))
+            ENDDAY=`printf "%02d\n" "$(($ENDDAY-28))"`
+            ENDMONTH=`printf "%02d\n" "$(($ENDMONTH+1))"`
          fi;;
     "12") 
          if (($ENDDAY > 31 )) 
          then 
             echo "case 4"
-            ENDDAY=$(($ENDDAY-31))
-            ENDMONTH=1
+            ENDDAY=`printf "%02d\n" "$(($ENDDAY-31))"`
+            ENDMONTH=01
             ENDYEAR=$(($STARTYEAR+1))
          fi;;
     *) echo "Wrong Month"; exit 1 ;;
@@ -87,8 +87,8 @@ sed -i "s|WRFPATH|$WRFDIR|g" $POSTDIR/namelist.ARWpost
 sed -i "s/INTERVAL/$time_step_in_seconds/g" $POSTDIR/namelist.ARWpost
 
 cd $POSTDIR
-#rm -rf $WRFDIR/run/ARWpost
-#mkdir $WRFDIR/run/ARWpost
+rm -rf $WRFDIR/run/ARWpost
+mkdir $WRFDIR/run/ARWpost
 
 ./ARWpost.exe
 
@@ -107,6 +107,4 @@ cp $WRFROOT/config/udpt $WRFROOT/GrADs/udpt
 filename="${TYPE}_arwpost_${STARTYEAR}-${STARTMONTH}-${STARTDAY}_${STARTHOUR}-${ENDYEAR}-${ENDMONTH}-${ENDDAY}_${ENDHOUR}"
 
 grads -bpcx 'visualizeWRF.gs '$filename' '$TYPE
-rm -rf $ROOTDIR/backend/src/main/resources/${TYPE}_IMAGES
-mkdir $ROOTDIR/backend/src/main/resources/${TYPE}_IMAGES
-mv -v ${TYPE}_*.png $ROOTDIR/backend/src/main/resources/${TYPE}_IMAGES
+mv -v ${TYPE}_*.png $ROOTDIR/backend/target/classes/${TYPE}_IMAGES

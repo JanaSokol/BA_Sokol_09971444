@@ -11,16 +11,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-// TODO Exception Handling
 @Service
 public class ICONServiceImpl implements ICONService {
 
@@ -34,48 +34,74 @@ public class ICONServiceImpl implements ICONService {
     }
 
     @Override
-    public List<ICONImage> getICONOutputByDate(LocalDate date) {
+    public ICON getICONOutputByDate(LocalDate date) {
         LOGGER.debug("Get ICON Output by date {}", date);
 
         try {
-            ICON icon = iconRepository.findByStartEquals(date);
-            return new ArrayList<>(icon.getImages());
+            return iconRepository.findByStartEquals(date);
         } catch (DataAccessException e) {
             throw new NotFoundException(String.format("Could not find icon with date %s", date));
         }
     }
 
+    @Transactional
     @Override
-    public void saveICONImages() {
+    public void saveICONImages(LocalDate date) {
         LOGGER.debug("Saving ICON Images.");
 
-        Set<ICONImage> iconImages = new HashSet<>();
+        Set<ICONImage> gradsImages = new HashSet<>();
+        Set<ICONImage> nclImages = new HashSet<>();
         try {
             int amountOfImages = 11;
-            for (int i = 1; i <= amountOfImages; i++) {
-                ClassPathResource backImgFile = new ClassPathResource("ICON_IMAGES/ICON_" + i + ".png");
-                byte[] arrayPic = new byte[(int) backImgFile.contentLength()];
+            int cycle = 0;
+            int timeStep = 12;
+            for (int i = 0; i < amountOfImages; i++) {
+                gradsImages.add(saveIndividualImage(date, cycle, "ICON_IMAGES/ICON_GrADs_" + (i + 1) + ".png"));
+                nclImages.add(saveIndividualImage(date, cycle, "ICON_IMAGES/ICON_NCL.0000" + ((i + 1 >= 10) ? "" : "0") + (i + 1) + ".png"));
 
-                backImgFile.getInputStream().read(arrayPic);
-                ICONImage iconImage = ICONImage.ICONImageBuilder.aICONImage()
-                        .withImage(arrayPic)
-                        .build();
-                iconImages.add(iconImage);
-                iconImageRepository.save(iconImage);
+                cycle = (cycle + timeStep) % 24;
+                date = cycle % 24 == 0 ? date.plusDays(1) : date;
             }
             ICON icon = ICON.ICONBuilder.anICON()
                     .withStart(LocalDate.now())
-                    .withImages(iconImages)
+                    .withGradsImages(gradsImages)
+                    .withNclImages(nclImages)
                     .build();
             iconRepository.save(icon);
         } catch (IOException e) {
-            // TODO
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
+    }
+
+    /**
+     * Loads and saves image to the repository.
+     *
+     * @param date     of image.
+     * @param cycle    of image.
+     * @param filename to search by.
+     * @return the loaded image.
+     */
+    private ICONImage saveIndividualImage(LocalDate date, int cycle, String filename) throws IOException {
+        LocalDateTime localDateTime = LocalDateTime.of(date, LocalTime.of(cycle, 0));
+        ClassPathResource backImgFileGRADS = new ClassPathResource(filename);
+        byte[] arrayPic = new byte[(int) backImgFileGRADS.contentLength()];
+
+        backImgFileGRADS.getInputStream().read(arrayPic);
+        ICONImage iconImage = ICONImage.ICONImageBuilder.aICONImage()
+                .withImage(arrayPic)
+                .withDateTime(localDateTime)
+                .build();
+        iconImageRepository.save(iconImage);
+        return iconImage;
     }
 
     @Override
     public boolean existsICONByStartEquals(LocalDate date) {
-        return iconRepository.existsICONByStartEquals(date);
+        try {
+            return iconRepository.existsICONByStartEquals(date);
+        } catch (DataAccessException e) {
+            throw new NotFoundException(String.format("Could not find gfs with date %s", date));
+        }
     }
+
 }

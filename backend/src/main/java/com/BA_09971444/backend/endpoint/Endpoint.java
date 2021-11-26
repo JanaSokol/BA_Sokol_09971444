@@ -1,9 +1,9 @@
 package com.BA_09971444.backend.endpoint;
 
-import com.BA_09971444.backend.endpoint.dto.GFSImageDTO;
-import com.BA_09971444.backend.endpoint.dto.ICONImageDTO;
-import com.BA_09971444.backend.endpoint.mapper.GFSImageMapper;
-import com.BA_09971444.backend.endpoint.mapper.ICONImageMapper;
+import com.BA_09971444.backend.endpoint.dto.SimpleGfsDto;
+import com.BA_09971444.backend.endpoint.dto.SimpleIconDto;
+import com.BA_09971444.backend.endpoint.mapper.GfsMapper;
+import com.BA_09971444.backend.endpoint.mapper.IconMapper;
 import com.BA_09971444.backend.service.GFSService;
 import com.BA_09971444.backend.service.ICONService;
 import org.slf4j.Logger;
@@ -29,11 +29,11 @@ public class Endpoint {
     private final ICONService iconService;
 
     //Mapper
-    private final GFSImageMapper gfsImageMapper;
-    private final ICONImageMapper iconImageMapper;
+    private final GfsMapper gfsImageMapper;
+    private final IconMapper iconImageMapper;
 
     @Autowired
-    public Endpoint(GFSService gfsService, ICONService iconService, GFSImageMapper gfsImageMapper, ICONImageMapper iconImageMapper) {
+    public Endpoint(GFSService gfsService, ICONService iconService, GfsMapper gfsImageMapper, IconMapper iconImageMapper) {
         this.gfsService = gfsService;
         this.iconService = iconService;
         this.gfsImageMapper = gfsImageMapper;
@@ -47,12 +47,11 @@ public class Endpoint {
      * Gets gfs output for a specific day.
      */
     @GetMapping(path = "/gfs")
-    public List<GFSImageDTO> getGFSOutputByDate(@RequestParam
-                                                @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public SimpleGfsDto getGFSOutputByDate(@RequestParam
+                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         LOGGER.info("GET /weather/gfs/{}", date);
 
-        // TODO
-        return gfsImageMapper.gfsImageToGfsImageDTO(gfsService.getGFSOutputByDate(date));
+        return gfsImageMapper.gfsToSimpleGfsDto(gfsService.getGFSOutputByDate(date));
     }
 
     /*------------------------- ICON -------------------------*/
@@ -61,11 +60,22 @@ public class Endpoint {
      * Gets icon output for a specific day.
      */
     @GetMapping(path = "/icon")
-    public List<ICONImageDTO> getICONOutputByDate(@RequestParam
-                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public SimpleIconDto getICONOutputByDate(@RequestParam
+                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         LOGGER.info("GET /weather/icon/{}", date);
 
-        // TODO
-        return iconImageMapper.iconImageToIconImageDTO(iconService.getICONOutputByDate(date));
+        return iconImageMapper.iconToSimpleIconDto(iconService.getICONOutputByDate(date));
+    }
+
+    /**
+     * Gets a list of dates that are available in the backend.
+     *
+     * @return list of dates.
+     */
+    @GetMapping()
+    public List<LocalDate> getAvailableDates() {
+        LOGGER.info("GET /weather");
+
+        return gfsService.getAvailableDates();
     }
 }
