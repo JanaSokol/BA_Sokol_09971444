@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
-public class ICON {
+public class Icon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,36 +15,36 @@ public class ICON {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "ICON_GRADS_IMAGE_ASSOCIATION")
-    private Set<ICONImage> gradsImages;
+    private Set<IconImage> gradsImages;
 
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "ICON_NCL_IMAGE_ASSOCIATION")
-    private Set<ICONImage> nclImages;
+    private Set<IconImage> nclImages;
 
     public void setStart(LocalDate start) {
         this.start = start;
     }
 
-    public Set<ICONImage> getGradsImages() {
+    public Set<IconImage> getGradsImages() {
         return gradsImages;
     }
 
-    public void setGradsImages(Set<ICONImage> gradsImages) {
+    public void setGradsImages(Set<IconImage> gradsImages) {
         this.gradsImages = gradsImages;
     }
 
-    public Set<ICONImage> getNclImages() {
+    public Set<IconImage> getNclImages() {
         return nclImages;
     }
 
-    public void setNclImages(Set<ICONImage> nclImages) {
+    public void setNclImages(Set<IconImage> nclImages) {
         this.nclImages = nclImages;
     }
 
     @Override
     public String toString() {
-        return "ICON{" +
+        return "Icon{" +
                 "id=" + id +
                 ", start=" + start +
                 ", gradsImages=" + gradsImages +
@@ -54,8 +54,8 @@ public class ICON {
 
     public static final class ICONBuilder {
         private LocalDate start;
-        private Set<ICONImage> gradsImages;
-        private Set<ICONImage> nclImages;
+        private Set<IconImage> gradsImages;
+        private Set<IconImage> nclImages;
 
         private ICONBuilder() {
         }
@@ -69,18 +69,18 @@ public class ICON {
             return this;
         }
 
-        public ICONBuilder withGradsImages(Set<ICONImage> images) {
+        public ICONBuilder withGradsImages(Set<IconImage> images) {
             this.gradsImages = images;
             return this;
         }
 
-        public ICONBuilder withNclImages(Set<ICONImage> nclImages) {
+        public ICONBuilder withNclImages(Set<IconImage> nclImages) {
             this.nclImages = nclImages;
             return this;
         }
 
-        public ICON build() {
-            ICON icon = new ICON();
+        public Icon build() {
+            Icon icon = new Icon();
             icon.setStart(start);
             icon.setGradsImages(gradsImages);
             icon.setNclImages(nclImages);

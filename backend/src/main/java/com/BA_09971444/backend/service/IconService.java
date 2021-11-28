@@ -1,21 +1,22 @@
 package com.BA_09971444.backend.service;
 
-import com.BA_09971444.backend.entity.ICON;
+import com.BA_09971444.backend.entity.IconImage;
 
 import java.time.LocalDate;
+import java.util.List;
 
-public interface ICONService {
+public interface IconService {
 
     /**
-     * Gets the ICON output for a specific time period.
+     * Gets the Icon output for a specific time period.
      *
-     * @param date to get ICON output by.
+     * @param date to get Icon output by.
      * @return icon of the specific time period.
      */
-    ICON getICONOutputByDate(LocalDate date);
+    List<IconImage> getICONOutputByDate(LocalDate date, Long visType);
 
     /**
-     * Saves all ICON images from the resource folder in the h2 database.
+     * Saves all Icon images from the resource folder in the h2 database.
      */
     void saveICONImages(LocalDate date);
 

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Image} from "../dtos/image";
+import {WrfImage} from "../../dtos/wrf-image";
 
 @Component({
   selector: 'app-weather-model',
@@ -9,22 +9,17 @@ import {Image} from "../dtos/image";
 export class WeatherModelComponent implements OnInit {
 
   @Input()
-  images: Image[] = [];
+  images: WrfImage[] = [];
   @Input()
   index: number = 0;
+  @Input()
+  visType: number = 1;
+
   currentPicture: string = "";
 
   constructor() { }
 
   ngOnInit(): void {
-  }
-
-  /**
-   * Opens current clicked picture in popup.
-   */
-  onOpened(event: any) {
-    console.log("CLICK")
-    this.currentPicture = event.target.src;
   }
 
 }

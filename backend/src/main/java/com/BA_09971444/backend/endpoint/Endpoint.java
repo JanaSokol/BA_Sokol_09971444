@@ -1,11 +1,13 @@
 package com.BA_09971444.backend.endpoint;
 
-import com.BA_09971444.backend.endpoint.dto.SimpleGfsDto;
-import com.BA_09971444.backend.endpoint.dto.SimpleIconDto;
+import com.BA_09971444.backend.endpoint.dto.GfsImageDto;
+import com.BA_09971444.backend.endpoint.dto.IconImageDto;
+import com.BA_09971444.backend.endpoint.mapper.GfsImageMapper;
 import com.BA_09971444.backend.endpoint.mapper.GfsMapper;
+import com.BA_09971444.backend.endpoint.mapper.IconImageMapper;
 import com.BA_09971444.backend.endpoint.mapper.IconMapper;
-import com.BA_09971444.backend.service.GFSService;
-import com.BA_09971444.backend.service.ICONService;
+import com.BA_09971444.backend.service.GfsService;
+import com.BA_09971444.backend.service.IconService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,46 +27,50 @@ public class Endpoint {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // Services
-    private final GFSService gfsService;
-    private final ICONService iconService;
+    private final GfsService gfsService;
+    private final IconService iconService;
 
     //Mapper
-    private final GfsMapper gfsImageMapper;
-    private final IconMapper iconImageMapper;
+    private final GfsMapper gfsMapper;
+    private final IconMapper iconMapper;
+    private final IconImageMapper iconImageMapper;
+    private final GfsImageMapper gfsImageMapper;
 
     @Autowired
-    public Endpoint(GFSService gfsService, ICONService iconService, GfsMapper gfsImageMapper, IconMapper iconImageMapper) {
+    public Endpoint(GfsService gfsService, IconService iconService, GfsMapper gfsMapper, IconMapper iconMapper, IconImageMapper iconImageMapper, GfsImageMapper gfsImageMapper) {
         this.gfsService = gfsService;
         this.iconService = iconService;
-        this.gfsImageMapper = gfsImageMapper;
+        this.gfsMapper = gfsMapper;
+        this.iconMapper = iconMapper;
         this.iconImageMapper = iconImageMapper;
+        this.gfsImageMapper = gfsImageMapper;
     }
 
 
-    /*------------------------- GFS -------------------------*/
+    /*------------------------- Gfs -------------------------*/
 
     /**
      * Gets gfs output for a specific day.
      */
     @GetMapping(path = "/gfs")
-    public SimpleGfsDto getGFSOutputByDate(@RequestParam
-                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        LOGGER.info("GET /weather/gfs/{}", date);
+    public List<GfsImageDto> getGFSOutputByDate(@RequestParam
+                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date , @RequestParam Long visType) {
+        LOGGER.info("GET /weather/gfs/{}{}", date, visType);
 
-        return gfsImageMapper.gfsToSimpleGfsDto(gfsService.getGFSOutputByDate(date));
+       return gfsImageMapper.gfsImageListToGfsImageListDto(gfsService.getGFSOutputByDate(date, visType));
     }
 
-    /*------------------------- ICON -------------------------*/
+    /*------------------------- Icon -------------------------*/
 
     /**
      * Gets icon output for a specific day.
      */
     @GetMapping(path = "/icon")
-    public SimpleIconDto getICONOutputByDate(@RequestParam
-                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        LOGGER.info("GET /weather/icon/{}", date);
+    public List<IconImageDto> getICONOutputByDate(@RequestParam
+                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, @RequestParam Long visType) {
+        LOGGER.info("GET /weather/icon/{}{}", date, visType);
 
-        return iconImageMapper.iconToSimpleIconDto(iconService.getICONOutputByDate(date));
+        return iconImageMapper.iconImageListToIconImageListDto(iconService.getICONOutputByDate(date,visType));
     }
 
     /**

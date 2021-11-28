@@ -1,20 +1,20 @@
 package com.BA_09971444.backend.endpoint.dto;
 
-import com.BA_09971444.backend.entity.GFSImage;
+import com.BA_09971444.backend.entity.GfsImage;
 
-import java.util.Set;
+import java.util.List;
 
 public class SimpleGfsDto {
 
-    private Set<GFSImage> gradsImages;
+    private List<GfsImage> gradsImages;
 
-    private Set<GFSImage> nclImages;
+    private List<GfsImage> nclImages;
 
-    public void setGradsImages(Set<GFSImage> gradsImages) {
+    public void setGradsImages(List<GfsImage> gradsImages) {
         this.gradsImages = gradsImages;
     }
 
-    public void setNclImages(Set<GFSImage> nclImages) {
+    public void setNclImages(List<GfsImage> nclImages) {
         this.nclImages = nclImages;
     }
 

@@ -2,8 +2,8 @@ package com.BA_09971444.backend.service.impl;
 
 import com.BA_09971444.backend.exception.InvalidDateException;
 import com.BA_09971444.backend.exception.WRFBuildFailedException;
-import com.BA_09971444.backend.service.GFSService;
-import com.BA_09971444.backend.service.ICONService;
+import com.BA_09971444.backend.service.GfsService;
+import com.BA_09971444.backend.service.IconService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -27,16 +27,16 @@ import java.util.concurrent.Executors;
 public class AutoService implements ApplicationRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private final GFSService gfsService;
-    private final ICONService iconService;
+    private final GfsService gfsService;
+    private final IconService iconService;
 
-    public AutoService(GFSService gfsService, ICONService iconService) {
+    public AutoService(GfsService gfsService, IconService iconService) {
         this.gfsService = gfsService;
         this.iconService = iconService;
     }
 
     /**
-     * Downloads GFS and Icon data, runs WRF and Visualisation for the current day upon starting the application.
+     * Downloads Gfs and Icon data, runs WRF and Visualisation for the current day upon starting the application.
      */
     @Override
     public void run(ApplicationArguments args) {

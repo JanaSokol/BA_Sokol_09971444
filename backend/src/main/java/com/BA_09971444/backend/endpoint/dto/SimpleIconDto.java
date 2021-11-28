@@ -1,21 +1,30 @@
 package com.BA_09971444.backend.endpoint.dto;
 
-import com.BA_09971444.backend.entity.ICONImage;
+import com.BA_09971444.backend.entity.IconImage;
 
-import java.util.Set;
+import java.util.List;
 
 public class SimpleIconDto {
 
-    private Set<ICONImage> gradsImages;
+    private List<IconImage> gradsImages;
 
-    private Set<ICONImage> nclImages;
+    private List<IconImage> nclImages;
 
-    public void setGradsImages(Set<ICONImage> gradsImages) {
+    public void setGradsImages(List<IconImage> gradsImages) {
         this.gradsImages = gradsImages;
     }
 
-    public void setNclImages(Set<ICONImage> nclImages) {
+    public void setNclImages(List<IconImage> nclImages) {
         this.nclImages = nclImages;
+    }
+
+
+    public List<IconImage> getGradsImages() {
+        return gradsImages;
+    }
+
+    public List<IconImage> getNclImages() {
+        return nclImages;
     }
 
     @Override

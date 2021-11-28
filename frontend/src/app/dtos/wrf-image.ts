@@ -1,4 +1,4 @@
-export class Image {
+export class WrfImage {
   constructor(
     public id: number,
     public dateTime: string,

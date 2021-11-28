@@ -21,8 +21,8 @@
     </form>
 
     <div class="d-flex justify-content-between">
-      <app-weather-model *ngIf="gfs" class="w-50" [images]="gfs.images" [index]="this.index"></app-weather-model>
-      <app-weather-model *ngIf="icon" class="w-50" [images]="icon.images" [index]="this.index"></app-weather-model>
+      <app-weather-model *ngIf="gfs" class="w-50" [images]="currentlyLoadedGfs" [index]="this.index" [visType]="this.visType"></app-weather-model>
+      <app-weather-model *ngIf="icon" class="w-50" [images]="currentlyLoadedIcon" [index]="this.index" [visType]="this.visType"></app-weather-model>
     </div>
 
     <div class="d-flex justify-content-center w-50 mx-auto mt-5">
@@ -34,8 +34,8 @@
           <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <span class="d-flex align-items-center">{{this.index + 1}}/{{this.gfs.images.length}} time steps</span>
-      <button [disabled]="this.index == this.gfs.images.length - 1" type="button"
+      <span class="d-flex align-items-center">{{this.index + 1}}/{{this.currentlyLoadedGfs.length}} time steps</span>
+      <button [disabled]="this.index == this.currentlyLoadedGfs.length - 1" type="button"
               class="btn btn-outline-primary flex-fill ms-5"
               (click)="next()">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24"

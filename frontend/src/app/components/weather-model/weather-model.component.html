@@ -1,0 +1,8 @@
+  <div *ngIf="visType == 1" class="overflow-hidden image">
+    <img *ngIf="images.length != 0" class=" mr-3 rounded w-100 grads"
+         src="data:image/png;base64,{{images[this.index].image}}" alt="image">
+  </div>
+  <div *ngIf="visType == 2" class="overflow-hidden image">
+    <img *ngIf="images.length != 0" class=" mr-3 rounded w-100"
+         src="data:image/png;base64,{{images[this.index].image}}" alt="image">
+  </div>

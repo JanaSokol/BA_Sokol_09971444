@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
-public class GFS {
+public class Gfs {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,35 +15,35 @@ public class GFS {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "GFS_GRADS_IMAGE_ASSOCIATION")
-    private Set<GFSImage> gradsImages;
+    private Set<GfsImage> gradsImages;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "GFS_NCL_IMAGE_ASSOCIATION")
-    private Set<GFSImage> nclImages;
+    private Set<GfsImage> nclImages;
 
     public void setStart(LocalDate start) {
         this.start = start;
     }
 
-    public Set<GFSImage> getGradsImages() {
+    public Set<GfsImage> getGradsImages() {
         return gradsImages;
     }
 
-    public void setGradsImages(Set<GFSImage> gradsImages) {
+    public void setGradsImages(Set<GfsImage> gradsImages) {
         this.gradsImages = gradsImages;
     }
 
-    public Set<GFSImage> getNclImages() {
+    public Set<GfsImage> getNclImages() {
         return nclImages;
     }
 
-    public void setNclImages(Set<GFSImage> nclImages) {
+    public void setNclImages(Set<GfsImage> nclImages) {
         this.nclImages = nclImages;
     }
 
     @Override
     public String toString() {
-        return "GFS{" +
+        return "Gfs{" +
                 "id=" + id +
                 ", start=" + start +
                 ", gradsImages=" + gradsImages +
@@ -53,8 +53,8 @@ public class GFS {
 
     public static final class GFSBuilder {
         private LocalDate start;
-        private Set<GFSImage> gradsImages;
-        private Set<GFSImage> nclImages;
+        private Set<GfsImage> gradsImages;
+        private Set<GfsImage> nclImages;
 
         private GFSBuilder() {
         }
@@ -68,18 +68,18 @@ public class GFS {
             return this;
         }
 
-        public GFSBuilder withGradsImages(Set<GFSImage> gradsImages) {
+        public GFSBuilder withGradsImages(Set<GfsImage> gradsImages) {
             this.gradsImages = gradsImages;
             return this;
         }
 
-        public GFSBuilder withNclImages(Set<GFSImage> nclImages) {
+        public GFSBuilder withNclImages(Set<GfsImage> nclImages) {
             this.nclImages = nclImages;
             return this;
         }
 
-        public GFS build() {
-            GFS gfs = new GFS();
+        public Gfs build() {
+            Gfs gfs = new Gfs();
             gfs.setStart(start);
             gfs.setGradsImages(gradsImages);
             gfs.setNclImages(nclImages);

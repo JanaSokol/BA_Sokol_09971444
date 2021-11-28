@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
-import {Image} from "../dtos/image";
+import {SimpleIcon} from "../dtos/simple-icon";
+import {WrfImage} from "../dtos/wrf-image";
 
 @Injectable({
   providedIn: 'root'
@@ -16,13 +17,13 @@ export class IconService {
   }
 
   /**
-   * Runs main script.
+   * Gets ICON output by date.
    */
-  getICONOutputByTime(date: string, visType: number): Observable<Image[]> {
+  getICONOutputByTime(date: string, visType: number): Observable<WrfImage[]> {
     const params = new HttpParams()
       .set('date', String(date))
       .set('visType', visType)
-    return this.httpClient.get<Image[]>(this.iconBaseUri, {params});
+    return this.httpClient.get<WrfImage[]>(this.iconBaseUri, {params});
   }
 
 }

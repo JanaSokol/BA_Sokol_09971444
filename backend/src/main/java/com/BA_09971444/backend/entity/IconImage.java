@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-public class ICONImage {
+public class IconImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,10 +19,10 @@ public class ICONImage {
     private LocalDateTime dateTime;
 
     @ManyToMany(mappedBy = "gradsImages")
-    private Set<ICON> gradsSet;
+    private Set<Icon> gradsSet;
 
     @ManyToMany(mappedBy = "nclImages")
-    private Set<ICON> nclSet;
+    private Set<Icon> nclSet;
 
     public void setImage(byte[] image) {
         this.image = image;
@@ -32,9 +32,41 @@ public class ICONImage {
         this.dateTime = dateTime;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public Set<Icon> getGradsSet() {
+        return gradsSet;
+    }
+
+    public void setGradsSet(Set<Icon> gradsSet) {
+        this.gradsSet = gradsSet;
+    }
+
+    public Set<Icon> getNclSet() {
+        return nclSet;
+    }
+
+    public void setNclSet(Set<Icon> nclSet) {
+        this.nclSet = nclSet;
+    }
+
     @Override
     public String toString() {
-        return "ICONImage{" +
+        return "IconImage{" +
                 "id=" + id +
                 ", Image=" + image.length +
                 ", dateTime=" + dateTime +
@@ -62,8 +94,8 @@ public class ICONImage {
             return this;
         }
 
-        public ICONImage build() {
-            ICONImage iconImage = new ICONImage();
+        public IconImage build() {
+            IconImage iconImage = new IconImage();
             iconImage.setImage(image);
             iconImage.setDateTime(dateTime);
             return iconImage;

@@ -1,22 +1,22 @@
 package com.BA_09971444.backend.service;
 
-import com.BA_09971444.backend.entity.GFS;
+import com.BA_09971444.backend.entity.GfsImage;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public interface GFSService {
+public interface GfsService {
 
     /**
-     * Gets the GFS output for a specific time period.
+     * Gets the Gfs output for a specific time period.
      *
-     * @param date to get GFS output by.
+     * @param date to get Gfs output by.
      * @return gfs of the specific time period.
      */
-    GFS getGFSOutputByDate(LocalDate date);
+    List<GfsImage> getGFSOutputByDate(LocalDate date, Long visType);
 
     /**
-     * Saves all GFS images from the resource folder in the h2 database.
+     * Saves all Gfs images from the resource folder in the h2 database.
      */
     void saveGFSImages(LocalDate date);
 

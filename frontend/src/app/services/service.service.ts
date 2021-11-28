@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
 
@@ -15,8 +15,10 @@ export class ServiceService {
               private globals: Globals) {
   }
 
-  getAvailableDates(): Observable<string[]>{
+  /**
+   * Gets all available dates.
+   */
+  getAvailableDates(): Observable<string[]> {
     return this.httpClient.get<string[]>(this.baseURI);
   }
-
 }

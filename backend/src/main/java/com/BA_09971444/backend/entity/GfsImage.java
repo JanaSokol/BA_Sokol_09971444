@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-public class GFSImage {
+public class GfsImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,10 +19,10 @@ public class GFSImage {
     private LocalDateTime dateTime;
 
     @ManyToMany(mappedBy = "gradsImages")
-    private Set<GFS> gradsSet;
+    private Set<Gfs> gradsSet;
 
     @ManyToMany(mappedBy = "nclImages")
-    private Set<GFS> nclSet;
+    private Set<Gfs> nclSet;
 
     public void setImage(byte[] image) {
         this.image = image;
@@ -32,9 +32,41 @@ public class GFSImage {
         this.dateTime = dateTime;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public Set<Gfs> getGradsSet() {
+        return gradsSet;
+    }
+
+    public void setGradsSet(Set<Gfs> gradsSet) {
+        this.gradsSet = gradsSet;
+    }
+
+    public Set<Gfs> getNclSet() {
+        return nclSet;
+    }
+
+    public void setNclSet(Set<Gfs> nclSet) {
+        this.nclSet = nclSet;
+    }
+
     @Override
     public String toString() {
-        return "GFSImage{" +
+        return "GfsImage{" +
                 "id=" + id +
                 ", image=" + image.length +
                 ", dateTime=" + dateTime +
@@ -62,8 +94,8 @@ public class GFSImage {
             return this;
         }
 
-        public GFSImage build() {
-            GFSImage gfsImage = new GFSImage();
+        public GfsImage build() {
+            GfsImage gfsImage = new GfsImage();
             gfsImage.setImage(image);
             gfsImage.setDateTime(dateTime);
             return gfsImage;
