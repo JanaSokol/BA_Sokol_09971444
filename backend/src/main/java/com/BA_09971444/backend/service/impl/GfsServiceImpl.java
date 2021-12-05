@@ -47,8 +47,9 @@ public class GfsServiceImpl implements GfsService {
 
     @Transactional
     @Override
-    public void saveGFSImages(LocalDate date) {
+    public void saveGFSImages(LocalDate date, String path) {
         LOGGER.debug("Saving Gfs Images.");
+        LocalDate currentDate = date;
 
         Set<GfsImage> gradsImages = new HashSet<>();
         Set<GfsImage> nclImages = new HashSet<>();
@@ -58,14 +59,14 @@ public class GfsServiceImpl implements GfsService {
             int timeStep = 12;
 
             for (int i = 0; i < amountOfImages; i++) {
-                gradsImages.add(saveIndividualImage(date, cycle, "GFS_IMAGES/GFS_GrADs_" + (i + 1) + ".png"));
+                gradsImages.add(saveIndividualImage(date, cycle, path + "GFS_GrADs_" + (i + 1) + ".png"));
                 nclImages.add(saveIndividualImage(date, cycle,
-                        "GFS_IMAGES/GFS_NCL.0000" + ((i + 1 >= 10) ? "" : "0") + (i + 1) + ".png"));
+                        path + "GFS_NCL.0000" + ((i + 1 >= 10) ? "" : "0") + (i + 1) + ".png"));
                 cycle = (cycle + timeStep) % 24;
                 date = cycle % 24 == 0 ? date.plusDays(1) : date;
             }
             Gfs gfs = Gfs.GFSBuilder.aGFS()
-                    .withStart(LocalDate.now())
+                    .withStart(currentDate)
                     .withGradsImages(gradsImages)
                     .withNclImages(nclImages)
                     .build();
@@ -116,5 +117,10 @@ public class GfsServiceImpl implements GfsService {
         } catch (DataAccessException e) {
             throw new NotFoundException("Database is empty.");
         }
+    }
+
+    @Override
+    public long entryCount() {
+        return gfsRepository.count();
     }
 }

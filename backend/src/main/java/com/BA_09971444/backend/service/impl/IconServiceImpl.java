@@ -47,9 +47,9 @@ public class IconServiceImpl implements IconService {
 
     @Transactional
     @Override
-    public void saveICONImages(LocalDate date) {
+    public void saveICONImages(LocalDate date, String path) {
         LOGGER.debug("Saving Icon Images.");
-
+        LocalDate currentDate = date;
         Set<IconImage> gradsImages = new HashSet<>();
         Set<IconImage> nclImages = new HashSet<>();
         try {
@@ -57,14 +57,14 @@ public class IconServiceImpl implements IconService {
             int cycle = 0;
             int timeStep = 12;
             for (int i = 0; i < amountOfImages; i++) {
-                gradsImages.add(saveIndividualImage(date, cycle, "ICON_IMAGES/ICON_GrADs_" + (i + 1) + ".png"));
-                nclImages.add(saveIndividualImage(date, cycle, "ICON_IMAGES/ICON_NCL.0000" + ((i + 1 >= 10) ? "" : "0") + (i + 1) + ".png"));
+                gradsImages.add(saveIndividualImage(date, cycle, path + "ICON_GrADs_" + (i + 1) + ".png"));
+                nclImages.add(saveIndividualImage(date, cycle, path + "ICON_NCL.0000" + ((i + 1 >= 10) ? "" : "0") + (i + 1) + ".png"));
 
                 cycle = (cycle + timeStep) % 24;
                 date = cycle % 24 == 0 ? date.plusDays(1) : date;
             }
             Icon icon = Icon.ICONBuilder.anICON()
-                    .withStart(LocalDate.now())
+                    .withStart(currentDate)
                     .withGradsImages(gradsImages)
                     .withNclImages(nclImages)
                     .build();

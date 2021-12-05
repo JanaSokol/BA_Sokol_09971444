@@ -15,11 +15,9 @@ export class WeatherModelComponent implements OnInit {
   @Input()
   visType: number = 1;
 
-  currentPicture: string = "";
-
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
-
 }

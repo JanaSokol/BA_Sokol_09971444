@@ -9,10 +9,10 @@
   <div>
     <form class="form d-flex justify-content-center w-50 mx-auto mt-2 mb-1" [formGroup]="form"
           (change)="getOutputByTime()">
+
       <select class="form-select w-50 me-5" aria-label="Default select example" formControlName="visType">
         <option value="1">GrADs</option>
-        <option value="2">NCL</option>
-        <option value="3">RIP</option>
+        <option value="2">NCL</option>s
       </select>
 
       <select class="form-select w-50 ms-5" aria-label="Default select example" formControlName="date">
@@ -21,8 +21,8 @@
     </form>
 
     <div class="d-flex justify-content-between">
-      <app-weather-model *ngIf="gfs" class="w-50" [images]="currentlyLoadedGfs" [index]="this.index" [visType]="this.visType"></app-weather-model>
-      <app-weather-model *ngIf="icon" class="w-50" [images]="currentlyLoadedIcon" [index]="this.index" [visType]="this.visType"></app-weather-model>
+      <app-weather-model *ngIf="gfs.gradsImages.length != 0" class="w-50" [images]="currentlyLoadedGfs" [index]="this.index" [visType]="this.visType"></app-weather-model>
+      <app-weather-model *ngIf="icon.gradsImages.length != 0" class="w-50" [images]="currentlyLoadedIcon" [index]="this.index" [visType]="this.visType"></app-weather-model>
     </div>
 
     <div class="d-flex justify-content-center w-50 mx-auto mt-5">

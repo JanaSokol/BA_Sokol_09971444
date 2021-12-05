@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {GfsService} from "../../services/gfs.service";
 import {SimpleGfs} from "../../dtos/simple-gfs";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -27,6 +27,7 @@ export class MainPageComponent implements OnInit {
   visType: number = 1;
   dates: string[] = [];
   form: FormGroup;
+
 
   constructor(private gfsService: GfsService, private iconService: IconService, private formBuilder: FormBuilder, private service: ServiceService) {
     this.form = this.formBuilder.group({
@@ -113,4 +114,5 @@ export class MainPageComponent implements OnInit {
   public previous() {
     this.index--;
   }
+
 }

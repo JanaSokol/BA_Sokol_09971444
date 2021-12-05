@@ -18,7 +18,7 @@ public interface GfsService {
     /**
      * Saves all Gfs images from the resource folder in the h2 database.
      */
-    void saveGFSImages(LocalDate date);
+    void saveGFSImages(LocalDate date, String path);
 
     /**
      * Checks if data has already been processed.
@@ -34,4 +34,6 @@ public interface GfsService {
      * @return a list of LocalDates.
      */
     List<LocalDate> getAvailableDates();
+
+    long entryCount();
 }

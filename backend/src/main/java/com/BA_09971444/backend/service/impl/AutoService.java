@@ -29,6 +29,7 @@ public class AutoService implements ApplicationRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final GfsService gfsService;
     private final IconService iconService;
+    private final boolean runRealSimulation = true;    // Update for desired run
 
     public AutoService(GfsService gfsService, IconService iconService) {
         this.gfsService = gfsService;
@@ -42,6 +43,32 @@ public class AutoService implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         LOGGER.debug("Automatic run after starting backend.");
 
+        if (runRealSimulation) {
+            generateRealData();
+        } else if (gfsService.entryCount() == 0) {
+            generateTestData();
+        }
+    }
+
+    private void generateTestData() {
+        LOGGER.debug("Generating test data");
+        List<LocalDate> dates = new ArrayList<>();
+        dates.add(LocalDate.of(2021, 11, 30));
+        dates.add(LocalDate.of(2021, 12, 1));
+        dates.add(LocalDate.of(2021, 12, 2));
+        dates.add(LocalDate.of(2021, 12, 3));
+        dates.add(LocalDate.of(2021, 12, 5));
+
+        for (LocalDate date : dates) {
+            String path = date.getDayOfMonth() + "_" + date.getMonthValue() + "_" + date.getYear() + "/";
+            gfsService.saveGFSImages(date, "TestData/GFS_IMAGES/" + path);
+            iconService.saveICONImages(date, "TestData/ICON_IMAGES/" + path);
+        }
+
+    }
+
+    private void generateRealData() {
+        LOGGER.debug("Generating real data");
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         List<Callable<Integer>> firstRun = new ArrayList<>();
         List<Callable<Integer>> secondRun = new ArrayList<>();
@@ -78,8 +105,8 @@ public class AutoService implements ApplicationRunner {
             try {
                 executorService.invokeAll(firstRun);
                 executorService.invokeAll(secondRun);
-                gfsService.saveGFSImages(LocalDate.now());
-                iconService.saveICONImages(LocalDate.now());
+                gfsService.saveGFSImages(LocalDate.now(), "GFS_IMAGES/");
+                iconService.saveICONImages(LocalDate.now(), "ICON_IMAGES/");
             } catch (WRFBuildFailedException | InterruptedException e) {
                 LOGGER.error(e.getMessage());
             }

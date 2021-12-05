@@ -31,8 +31,8 @@ file_conf=$1
 #################################
 # input
 #################################
-day=$1
-month=$2
+day=`printf "%02d\n" "${1}"`
+month=`printf "%02d\n" "${2}"`
 year=$3
 time_step_start=0
 time_step_end=120   # max 120, default 120

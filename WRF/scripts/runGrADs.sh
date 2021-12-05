@@ -5,8 +5,8 @@
 # input
 #################################
 TYPE=$1
-STARTDAY=$2
-STARTMONTH=$3
+STARTDAY=`printf "%02d\n" "${2}"`
+STARTMONTH=`printf "%02d\n" "${3}"`
 STARTYEAR=$4
 STARTHOUR=00
 ENDHOUR=120 # default 120
@@ -32,8 +32,8 @@ TEMP=$(($ENDHOUR/24))
 AMOUNT_OF_FILES=$(($ENDHOUR/$time_step))
 AMOUNT_OF_FILES=$(($AMOUNT_OF_FILES + 1))
 ENDHOUR=`printf "%02d\n" "${TEMPENDHOUR}"`
-ENDDAY=$(($TEMP+STARTDAY))
-ENDMONTH=$STARTMONTH
+ENDDAY=`printf "%02d\n" "$(($TEMP+STARTDAY))"`
+ENDMONTH=`printf "%02d\n" "${STARTMONTH}"`
 ENDYEAR=$STARTYEAR
 
 case $STARTMONTH  in

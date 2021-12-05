@@ -18,7 +18,7 @@ public interface IconService {
     /**
      * Saves all Icon images from the resource folder in the h2 database.
      */
-    void saveICONImages(LocalDate date);
+    void saveICONImages(LocalDate date, String path);
 
     /**
      * Checks if data has already been processed.

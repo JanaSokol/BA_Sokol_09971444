@@ -1,5 +1,8 @@
 .grads {
-  object-position: center -200px;
+  margin-top: -200px;
+}
+.ncl {
+  margin-top: 0px;
 }
 
 .image {
