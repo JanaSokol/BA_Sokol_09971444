@@ -10,13 +10,17 @@ public interface IconService {
     /**
      * Gets the Icon output for a specific time period.
      *
-     * @param date to get Icon output by.
-     * @return icon of the specific time period.
+     * @param date    date to get Icon output by.
+     * @param visType icon of the specific time period.
+     * @return the icon image.
      */
     List<IconImage> getICONOutputByDate(LocalDate date, Long visType);
 
     /**
      * Saves all Icon images from the resource folder in the h2 database.
+     *
+     * @param date specific date to add.
+     * @param path path of images.
      */
     void saveICONImages(LocalDate date, String path);
 

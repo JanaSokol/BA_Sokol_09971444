@@ -29,6 +29,7 @@ delete(opts)
 ;;;;;;;;;;;;;;; Height ;;;;;;;;;;;;;;;
 opts                = True
 opts@cnLineColor    = "White"
+opts@cnLineThicknessF    = 5
 opts@InitTime       = False 
 opts@Footer         = False
 contour_hgt         = wrf_contour(a,wks,hgt,opts)

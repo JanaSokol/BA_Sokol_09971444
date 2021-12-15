@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {GfsService} from "../../services/gfs.service";
 import {SimpleGfs} from "../../dtos/simple-gfs";
 import {FormBuilder, FormGroup} from "@angular/forms";
@@ -19,8 +19,8 @@ export class MainPageComponent implements OnInit {
   // Error Handling
   error = new ApplicationError();
 
-  gfs: SimpleGfs = new SimpleGfs( [], []);
-  icon: SimpleIcon = new SimpleIcon( [], []);
+  gfs: SimpleGfs = new SimpleGfs([], []);
+  icon: SimpleIcon = new SimpleIcon([], []);
   currentlyLoadedGfs: WrfImage[] = [];
   currentlyLoadedIcon: WrfImage[] = [];
   index: number = 0;
@@ -53,9 +53,9 @@ export class MainPageComponent implements OnInit {
     this.gfsService.getGFSOutputByTime(currentDate, this.visType).subscribe(
       (gfsImages: WrfImage[]) => {
         gfsImages.sort((b, a) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime());
-        if(this.visType === 1) {
+        if (this.visType === 1) {
           this.gfs.gradsImages = gfsImages;
-        }else if(this.visType === 2) {
+        } else if (this.visType === 2) {
           this.gfs.nclImages = gfsImages;
         }
         this.currentlyLoadedGfs = gfsImages;
@@ -69,9 +69,9 @@ export class MainPageComponent implements OnInit {
     this.iconService.getICONOutputByTime(currentDate, this.visType).subscribe(
       (iconImages: WrfImage[]) => {
         iconImages.sort((b, a) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime());
-        if(this.visType === 1) {
+        if (this.visType === 1) {
           this.icon.gradsImages = iconImages;
-        }else if(this.visType === 2) {
+        } else if (this.visType === 2) {
           this.icon.nclImages = iconImages;
         }
         this.currentlyLoadedIcon = iconImages;

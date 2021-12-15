@@ -29,11 +29,14 @@ public class AutoService implements ApplicationRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final GfsService gfsService;
     private final IconService iconService;
-    private final boolean runRealSimulation = true;    // Update for desired run
+    private final boolean runRealSimulation;
+    private final LocalDate day;
 
     public AutoService(GfsService gfsService, IconService iconService) {
         this.gfsService = gfsService;
         this.iconService = iconService;
+        this.day = LocalDate.now();
+        this.runRealSimulation = false;      // Update for desired run
     }
 
     /**
@@ -50,23 +53,30 @@ public class AutoService implements ApplicationRunner {
         }
     }
 
+    /**
+     * Generates and saves test data in the database.
+     */
     private void generateTestData() {
         LOGGER.debug("Generating test data");
         List<LocalDate> dates = new ArrayList<>();
-        dates.add(LocalDate.of(2021, 11, 30));
-        dates.add(LocalDate.of(2021, 12, 1));
-        dates.add(LocalDate.of(2021, 12, 2));
-        dates.add(LocalDate.of(2021, 12, 3));
-        dates.add(LocalDate.of(2021, 12, 5));
+        dates.add(LocalDate.of(2021, 12, 9));
+        dates.add(LocalDate.of(2021, 12, 10));
+        dates.add(LocalDate.of(2021, 12, 11));
+        dates.add(LocalDate.of(2021, 12, 12));
+        dates.add(LocalDate.of(2021, 12, 13));
+        dates.add(LocalDate.of(2021, 12, 14));
+        dates.add(LocalDate.of(2021, 12, 15));
 
         for (LocalDate date : dates) {
-            String path = date.getDayOfMonth() + "_" + date.getMonthValue() + "_" + date.getYear() + "/";
+            String path = date.getDayOfMonth() + "_" + date.getMonthValue() + "_" + date.getYear();
             gfsService.saveGFSImages(date, "TestData/GFS_IMAGES/" + path);
             iconService.saveICONImages(date, "TestData/ICON_IMAGES/" + path);
         }
-
     }
 
+    /**
+     * Generates and saves real data for the current day in the database.
+     */
     private void generateRealData() {
         LOGGER.debug("Generating real data");
         ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -93,11 +103,11 @@ public class AutoService implements ApplicationRunner {
             return 2;
         };
 
-        if (!gfsService.existsGFSByStartEquals(LocalDate.now())) {
+        if (!gfsService.existsGFSByStartEquals(day)) {
             firstRun.add(gfs_1);
             secondRun.add(gfs_2);
         }
-        if (!iconService.existsICONByStartEquals(LocalDate.now())) {
+        if (!iconService.existsICONByStartEquals(day)) {
             firstRun.add(icon_1);
             secondRun.add(icon_2);
         }
@@ -105,8 +115,8 @@ public class AutoService implements ApplicationRunner {
             try {
                 executorService.invokeAll(firstRun);
                 executorService.invokeAll(secondRun);
-                gfsService.saveGFSImages(LocalDate.now(), "GFS_IMAGES/");
-                iconService.saveICONImages(LocalDate.now(), "ICON_IMAGES/");
+                gfsService.saveGFSImages(day, "GFS_IMAGES");
+                iconService.saveICONImages(day, "ICON_IMAGES");
             } catch (WRFBuildFailedException | InterruptedException e) {
                 LOGGER.error(e.getMessage());
             }
@@ -123,8 +133,8 @@ public class AutoService implements ApplicationRunner {
         LOGGER.debug("Downloading {} Data.", type.toUpperCase());
 
         String[] command = new String[]{getScriptDirectory() + "/" + type.toLowerCase() + "_download.sh",
-                String.valueOf(LocalDate.now().getDayOfMonth()), String.valueOf(LocalDate.now().getMonthValue()),
-                String.valueOf(LocalDate.now().getYear())};
+                String.valueOf(day.getDayOfMonth()), String.valueOf(day.getMonthValue()),
+                String.valueOf(day.getYear())};
         try {
             runProcess(command, true, type + "_download");
         } catch (WRFBuildFailedException | InvalidDateException e) {
@@ -145,8 +155,8 @@ public class AutoService implements ApplicationRunner {
 
         // Creates processBuilder to run script
         String[] command = new String[]{getScriptDirectory() + "/main.sh", type.toUpperCase(),
-                String.valueOf(LocalDate.now().getDayOfMonth()), String.valueOf(LocalDate.now().getMonthValue()),
-                String.valueOf(LocalDate.now().getYear())};
+                String.valueOf(day.getDayOfMonth()), String.valueOf(day.getMonthValue()),
+                String.valueOf(day.getYear())};
         try {
             runProcess(command, false, type + "_main");
         } catch (WRFBuildFailedException e) {
@@ -164,12 +174,12 @@ public class AutoService implements ApplicationRunner {
 
         // Creates processBuilder to run script
         String[] command_grads = new String[]{getScriptDirectory() + "/runGrADs.sh", type.toUpperCase(),
-                String.valueOf(LocalDate.now().getDayOfMonth()), String.valueOf(LocalDate.now().getMonthValue()),
-                String.valueOf(LocalDate.now().getYear())};
+                String.valueOf(day.getDayOfMonth()), String.valueOf(day.getMonthValue()),
+                String.valueOf(day.getYear())};
 
         String[] command_ncl = new String[]{getScriptDirectory() + "/runNCL.sh", type.toUpperCase(),
-                String.valueOf(LocalDate.now().getDayOfMonth()), String.valueOf(LocalDate.now().getMonthValue()),
-                String.valueOf(LocalDate.now().getYear())};
+                String.valueOf(day.getDayOfMonth()), String.valueOf(day.getMonthValue()),
+                String.valueOf(day.getYear())};
         try {
             runProcess(command_grads, false, type + "_runGrADs");
             runProcess(command_ncl, false, type + "_runNCL");

@@ -57,8 +57,8 @@ public class IconServiceImpl implements IconService {
             int cycle = 0;
             int timeStep = 12;
             for (int i = 0; i < amountOfImages; i++) {
-                gradsImages.add(saveIndividualImage(date, cycle, path + "ICON_GrADs_" + (i + 1) + ".png"));
-                nclImages.add(saveIndividualImage(date, cycle, path + "ICON_NCL.0000" + ((i + 1 >= 10) ? "" : "0") + (i + 1) + ".png"));
+                gradsImages.add(saveIndividualImage(date, cycle, path + "_GRADS/ICON_GrADs_" + (i + 1) + ".png"));
+                nclImages.add(saveIndividualImage(date, cycle, path + "_NCL/ICON_NCL.0000" + ((i + 1 >= 10) ? "" : "0") + (i + 1) + ".png"));
 
                 cycle = (cycle + timeStep) % 24;
                 date = cycle % 24 == 0 ? date.plusDays(1) : date;
@@ -71,6 +71,15 @@ public class IconServiceImpl implements IconService {
             iconRepository.save(icon);
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean existsICONByStartEquals(LocalDate date) {
+        try {
+            return iconRepository.existsICONByStartEquals(date);
+        } catch (DataAccessException e) {
+            throw new NotFoundException(String.format("Could not find gfs with date %s", date));
         }
     }
 
@@ -94,15 +103,6 @@ public class IconServiceImpl implements IconService {
                 .build();
         iconImageRepository.save(iconImage);
         return iconImage;
-    }
-
-    @Override
-    public boolean existsICONByStartEquals(LocalDate date) {
-        try {
-            return iconRepository.existsICONByStartEquals(date);
-        } catch (DataAccessException e) {
-            throw new NotFoundException(String.format("Could not find gfs with date %s", date));
-        }
     }
 
 }

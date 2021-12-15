@@ -18,17 +18,21 @@ public interface IconRepository extends JpaRepository<Icon, Long> {
      */
     Boolean existsICONByStartEquals(LocalDate date);
 
+    /**
+     * Gets all images with the visualization type ncl with a specific date.
+     *
+     * @param date to find.
+     * @return a list of icon images.
+     */
     @Query("select p.nclImages from Icon p where p.start = :date")
     List<IconImage> getNclImages(LocalDate date);
 
+    /**
+     * Gets all images with the visualization type grads with a specific date.
+     *
+     * @param date to find.
+     * @return a list of icon images.
+     */
     @Query("select p.gradsImages from Icon p where p.start = :date")
     List<IconImage> getGradsImages(LocalDate date);
-
-    /**
-     * Finds Icon with a specific date.
-     *
-     * @param date to check.
-     * @return Icon.
-     */
-    Icon findByStartEquals(LocalDate date);
 }

@@ -20,19 +20,23 @@ public interface GfsRepository extends JpaRepository<Gfs, Long> {
      */
     Boolean existsGFSByStartEquals(LocalDate date);
 
+    /**
+     * Gets all images with the visualization type ncl with a specific date.
+     *
+     * @param date to find.
+     * @return a list of gfs images.
+     */
     @Query("select p.nclImages from Gfs p where p.start = :date")
     List<GfsImage> getNclImages(LocalDate date);
 
+    /**
+     * Gets all images with the visualization type grads with a specific date.
+     *
+     * @param date to find.
+     * @return a list of gfs images.
+     */
     @Query("select p.gradsImages from Gfs p where p.start = :date")
     List<GfsImage> getGradsImages(LocalDate date);
-
-    /**
-     * Finds Gfs with a specific date.
-     *
-     * @param date to check.
-     * @return Gfs.
-     */
-    Gfs findByStartEquals(LocalDate date);
 
     /**
      * Gets all dates.

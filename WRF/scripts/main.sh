@@ -1,11 +1,17 @@
 #!/bin/bash
 
+# ================================================================================================== #
+# This code is inspired by:                                                                          #
+# MeteoAdriatic                                                                                      #
+# https://www.youtube.com/watch?v=FwvAhrJQb1M&list=PLRymTaM7hlGOh9FPTalCtR3dHXGe3jbBt (16.11.2021)   #
+# ================================================================================================== #  
+
 #################################
 # input
 #################################
 TYPE=$1
-STARTDAY=`printf "%02d\n" "${2}"`
-STARTMONTH=`printf "%02d\n" "${3}"`
+STARTDAY=$2
+STARTMONTH=$3
 STARTYEAR=$4
 STARTHOUR=00
 ENDHOUR=120 # default 120
@@ -69,8 +75,8 @@ rm -rf $WRFDIR/run/namelist.input
 OLDENDHOUR=$ENDHOUR
 TEMPENDHOUR=$(($ENDHOUR % 24))
 TEMP=$(($ENDHOUR/24))
-ENDHOUR=`printf "%02d\n" "${TEMPENDHOUR}"`
-ENDDAY=`printf "%02d\n" "$(($TEMP+STARTDAY))"`
+ENDHOUR=${TEMPENDHOUR}
+ENDDAY=$(($TEMP+STARTDAY))
 ENDMONTH=$STARTMONTH
 ENDYEAR=$STARTYEAR
 
@@ -79,28 +85,28 @@ case $STARTMONTH  in
          if (($ENDDAY > 31 )) 
          then 
             echo "case 1"
-            ENDDAY=`printf "%02d\n" "$(($ENDDAY-31))"`
-            ENDMONTH=`printf "%02d\n" "$(($ENDMONTH+1))"`
+            ENDDAY=$(($ENDDAY-31))
+            ENDMONTH=$(($ENDMONTH+1))
          fi;;
     "4"|"6"|"9"|"11") 
          if (($ENDDAY > 30 )) 
          then 
             echo "case 2"
-            ENDDAY=`printf "%02d\n" "$(($ENDDAY-30))"`
-            ENDMONTH=`printf "%02d\n" "$(($ENDMONTH+1))"`
+            ENDDAY=$(($ENDDAY-30))
+            ENDMONTH=$(($ENDMONTH+1))
          fi;;
     "2") 
          if (($ENDDAY > 28 )) 
          then 
             echo "case 3"
-            ENDDAY=`printf "%02d\n" "$(($ENDDAY-28))"`
-            ENDMONTH=`printf "%02d\n" "$(($ENDMONTH+1))"`
+            ENDDAY=$(($ENDDAY-28))
+            ENDMONTH=$(($ENDMONTH+1))
          fi;;
     "12") 
          if (($ENDDAY > 31 )) 
          then 
             echo "case 4"
-            ENDDAY=`printf "%02d\n" "$(($ENDDAY-31))"`
+            ENDDAY=$(($ENDDAY-31))
             ENDMONTH=01
             ENDYEAR=$(($STARTYEAR+1))
          fi;;
@@ -109,16 +115,29 @@ esac
 #################################
 # update namelist.wps
 #################################
+sday=`printf "%02d\n" "$STARTDAY"`
+eday=`printf "%02d\n" "$ENDDAY"`
+smon=`printf "%02d\n" "$STARTMONTH"`
+emon=`printf "%02d\n" "$ENDMONTH"`
+shour=`printf "%02d\n" "$STARTHOUR"`
+ehour=`printf "%02d\n" "$ENDHOUR"`
+echo $sday
+echo $eday
+echo $smon
+echo $emon
+echo $shour
+echo $ehour
+
 cp $CONFIGDIR/namelist.wps $WPSDIR/namelist.wps
 sed -i "s/STARTYEAR/$STARTYEAR/g" $WPSDIR/namelist.wps
-sed -i "s/STARTDAY/$STARTDAY/g" $WPSDIR/namelist.wps
-sed -i "s/STARTMONTH/$STARTMONTH/g" $WPSDIR/namelist.wps
-sed -i "s/STARTHOUR/$STARTHOUR/g" $WPSDIR/namelist.wps
+sed -i "s/STARTDAY/$sday/g" $WPSDIR/namelist.wps
+sed -i "s/STARTMONTH/$smon/g" $WPSDIR/namelist.wps
+sed -i "s/STARTHOUR/$shour/g" $WPSDIR/namelist.wps
 
 sed -i "s/ENDYEAR/$ENDYEAR/g" $WPSDIR/namelist.wps
-sed -i "s/ENDMONTH/$ENDMONTH/g" $WPSDIR/namelist.wps
-sed -i "s/ENDDAY/$ENDDAY/g" $WPSDIR/namelist.wps
-sed -i "s/ENDHOUR/$ENDHOUR/g" $WPSDIR/namelist.wps
+sed -i "s/ENDMONTH/$emon/g" $WPSDIR/namelist.wps
+sed -i "s/ENDDAY/$eday/g" $WPSDIR/namelist.wps
+sed -i "s/ENDHOUR/$ehour/g" $WPSDIR/namelist.wps
 
 sed -i "s|GEOGPATH|$GEOGDIR|g" $WPSDIR/namelist.wps
 sed -i "s/INTERVAL/$time_step_in_seconds/g" $WPSDIR/namelist.wps
@@ -158,14 +177,14 @@ echo " "
 #################################
 cp $CONFIGDIR/namelist.input $WRFDIR/run/namelist.input
 sed -i "s/STARTYEAR/$STARTYEAR/g" $WRFDIR/run/namelist.input
-sed -i "s/STARTDAY/$STARTDAY/g" $WRFDIR/run/namelist.input
-sed -i "s/STARTMONTH/$STARTMONTH/g" $WRFDIR/run/namelist.input
-sed -i "s/STARTHOUR/$STARTHOUR/g" $WRFDIR/run/namelist.input
+sed -i "s/STARTDAY/$sday/g" $WRFDIR/run/namelist.input
+sed -i "s/STARTMONTH/$smon/g" $WRFDIR/run/namelist.input
+sed -i "s/STARTHOUR/$shour/g" $WRFDIR/run/namelist.input
 
 sed -i "s/ENDYEAR/$ENDYEAR/g" $WRFDIR/run/namelist.input
-sed -i "s/ENDDAY/$ENDDAY/g" $WRFDIR/run/namelist.input
-sed -i "s/ENDMONTH/$ENDMONTH/g" $WRFDIR/run/namelist.input
-sed -i "s/ENDHOUR/$ENDHOUR/g" $WRFDIR/run/namelist.input
+sed -i "s/ENDDAY/$eday/g" $WRFDIR/run/namelist.input
+sed -i "s/ENDMONTH/$emon/g" $WRFDIR/run/namelist.input
+sed -i "s/ENDHOUR/$ehour/g" $WRFDIR/run/namelist.input
 
 sed -i "s/INTERVAL/$time_step_in_seconds/g" $WRFDIR/run/namelist.input
 sed -i "s/RUNHOURS/$OLDENDHOUR/g" $WRFDIR/run/namelist.input

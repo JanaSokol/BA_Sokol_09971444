@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# ================================================================================================== #
+# This code is inspired by:                                                                          #
+# MeteoAdriatic                                                                                      #
+# https://www.youtube.com/watch?v=FwvAhrJQb1M&list=PLRymTaM7hlGOh9FPTalCtR3dHXGe3jbBt (16.11.2021)   #
+# ================================================================================================== #  
+
 ROOTDIR=$(find $HOME -type d -name BA_Sokol_09971444)
 inputdir=$ROOTDIR/WRF/DATA/GFS/
 rm -rf $inputdir

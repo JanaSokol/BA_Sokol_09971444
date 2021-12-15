@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @author TUWien SEPM Framework TODO
+ * @author TUWien Software Engineering und Projektmanagement Framework
  */
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {

@@ -59,9 +59,9 @@ public class GfsServiceImpl implements GfsService {
             int timeStep = 12;
 
             for (int i = 0; i < amountOfImages; i++) {
-                gradsImages.add(saveIndividualImage(date, cycle, path + "GFS_GrADs_" + (i + 1) + ".png"));
+                gradsImages.add(saveIndividualImage(date, cycle, path + "_GRADS/GFS_GrADs_" + (i + 1) + ".png"));
                 nclImages.add(saveIndividualImage(date, cycle,
-                        path + "GFS_NCL.0000" + ((i + 1 >= 10) ? "" : "0") + (i + 1) + ".png"));
+                        path + "_NCL/GFS_NCL.0000" + ((i + 1 >= 10) ? "" : "0") + (i + 1) + ".png"));
                 cycle = (cycle + timeStep) % 24;
                 date = cycle % 24 == 0 ? date.plusDays(1) : date;
             }
@@ -74,28 +74,6 @@ public class GfsServiceImpl implements GfsService {
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
-    }
-
-    /**
-     * Loads and saves image to the repository.
-     *
-     * @param date     of image.
-     * @param cycle    of image.
-     * @param filename to search by.
-     * @return the loaded image.
-     */
-    private GfsImage saveIndividualImage(LocalDate date, int cycle, String filename) throws IOException {
-        LocalDateTime localDateTime = LocalDateTime.of(date, LocalTime.of(cycle, 0));
-        ClassPathResource backImgFileGRADS = new ClassPathResource(filename);
-        byte[] arrayPic = new byte[(int) backImgFileGRADS.contentLength()];
-
-        backImgFileGRADS.getInputStream().read(arrayPic);
-        GfsImage gfsImage = GfsImage.GFSImageBuilder.aGFSImage()
-                .withImage(arrayPic)
-                .withDateTime(localDateTime)
-                .build();
-        gfsImageRepository.save(gfsImage);
-        return gfsImage;
     }
 
     @Override
@@ -122,5 +100,27 @@ public class GfsServiceImpl implements GfsService {
     @Override
     public long entryCount() {
         return gfsRepository.count();
+    }
+
+    /**
+     * Loads and saves image to the repository.
+     *
+     * @param date     of image.
+     * @param cycle    of image.
+     * @param filename to search by.
+     * @return the loaded image.
+     */
+    private GfsImage saveIndividualImage(LocalDate date, int cycle, String filename) throws IOException {
+        LocalDateTime localDateTime = LocalDateTime.of(date, LocalTime.of(cycle, 0));
+        ClassPathResource backImgFileGRADS = new ClassPathResource(filename);
+        byte[] arrayPic = new byte[(int) backImgFileGRADS.contentLength()];
+
+        backImgFileGRADS.getInputStream().read(arrayPic);
+        GfsImage gfsImage = GfsImage.GFSImageBuilder.aGFSImage()
+                .withImage(arrayPic)
+                .withDateTime(localDateTime)
+                .build();
+        gfsImageRepository.save(gfsImage);
+        return gfsImage;
     }
 }

@@ -34,4 +34,9 @@ timeout 10 ncl ncltemp.ncl
 
 rm -rf $WRFROOT/scripts/ncltemp.ncl
 
-mv -v ${TYPE}_*.png $ROOTDIR/backend/target/classes/${TYPE}_IMAGES
+
+TARGETDIR=$ROOTDIR/backend/target/classes/${TYPE}_IMAGES_NCL
+rm -rf $TARGETDIR
+mkdir $TARGETDIR
+
+mv -v ${TYPE}_*.png $TARGETDIR

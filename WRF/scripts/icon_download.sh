@@ -33,6 +33,8 @@ file_conf=$1
 #################################
 day=`printf "%02d\n" "${1}"`
 month=`printf "%02d\n" "${2}"`
+day1=$1
+month1=$2
 year=$3
 time_step_start=0
 time_step_end=120   # max 120, default 120
@@ -189,8 +191,8 @@ do
     #Calculate correct date and time
     TEMPENDHOUR=$(($i % 24))
     TEMP=$(($i/24))
-    ENDDAY=$(($TEMP+day))
-    ENDMONTH=$month
+    ENDDAY=$(($TEMP+day1))
+    ENDMONTH=$month1
     ENDYEAR=$year
 
     case $month  in
