@@ -66,6 +66,10 @@ public class AutoService implements ApplicationRunner {
         dates.add(LocalDate.of(2021, 12, 13));
         dates.add(LocalDate.of(2021, 12, 14));
         dates.add(LocalDate.of(2021, 12, 15));
+        dates.add(LocalDate.of(2021, 12, 16));
+        dates.add(LocalDate.of(2021, 12, 17));
+        dates.add(LocalDate.of(2021, 12, 18));
+        dates.add(LocalDate.of(2021, 12, 19));
 
         for (LocalDate date : dates) {
             String path = date.getDayOfMonth() + "_" + date.getMonthValue() + "_" + date.getYear();

@@ -40,3 +40,6 @@ while (t<=AMOUNT_OF_FILES)
 endwhile
 'close 1'
 'set grads off'
+
+
+

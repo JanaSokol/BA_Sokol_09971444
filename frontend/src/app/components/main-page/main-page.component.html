@@ -1,42 +1,66 @@
 <div class="pt-5 mb-3">
   <!--Heading-->
-  <div class="row justify-content-center align-items-center mt-3 pb-2">
+  <div class="row justify-content-center align-items-center mt-3 mb-5 pb-2">
     <div class="col-auto">
       <h2 class="mb-0">Weather Models</h2>
     </div>
   </div>
+  <div class="d-flex flex-column justify-content-center">
+    <!--Comparison-->
+      <form class="btn-group d-flex justify-content-center w-50 mx-auto mt-2 mb-3 mb-1" [formGroup]="radio"
+            (change)="test()">
+        <input type="radio" class="btn-check" value="1" formControlName="comparison" id="d-mod" autocomplete="off"
+               checked>
+        <label class="btn btn-outline-success" for="d-mod">Weather Prediction Models</label>
 
-  <div>
-    <form class="form d-flex justify-content-center w-50 mx-auto mt-2 mb-1" [formGroup]="form"
-          (change)="getOutputByTime()">
+        <input type="radio" class="btn-check" value="2" formControlName="comparison" id="vis-t" autocomplete="off">
+        <label class="btn btn-outline-success" for="vis-t">Visualization Tools</label>
+      </form>
+      <!--Forms-->
+      <form class="form d-flex justify-content-center w-50 mx-auto mt-2 mb-1" [formGroup]="form">
 
-      <select class="form-select w-50 me-5" aria-label="Default select example" formControlName="visType">
-        <option value="1">GrADs</option>
-        <option value="2">NCL</option>s
-      </select>
+        <select *ngIf="compType" class="form-select w-50 me-5" aria-label="Default select example"
+                formControlName="visType" (change)="showCorrectComparison()">
+          <option value="1">GrADs</option>
+          <option value="2">NCL</option>
+        </select>
 
-      <select class="form-select w-50 ms-5" aria-label="Default select example" formControlName="date">
-        <option *ngFor="let date of this.dates; let i = index" value="{{i}}">{{date}}</option>
-      </select>
-    </form>
+        <select *ngIf="!compType" class="form-select w-50 me-5" aria-label="Default select example"
+                formControlName="visType" (change)="showCorrectComparison()">
+          <option value="1">GFS</option>
+          <option value="2">ICON</option>
+        </select>
 
-    <div class="d-flex justify-content-between">
-      <app-weather-model *ngIf="gfs.gradsImages.length != 0" class="w-50" [images]="currentlyLoadedGfs" [index]="this.index" [visType]="this.visType"></app-weather-model>
-      <app-weather-model *ngIf="icon.gradsImages.length != 0" class="w-50" [images]="currentlyLoadedIcon" [index]="this.index" [visType]="this.visType"></app-weather-model>
+        <select class="form-select w-50 ms-5" aria-label="Default select example" formControlName="date"
+                (change)="getOutputByTime()">
+          <option *ngFor="let date of this.dates; let i = index" value="{{i}}">{{date}}</option>
+        </select>
+      </form>
+    <!--Images-->
+    <div class="d-flex justify-content-between mt-5 div-height flex-column flex-xl-row align-items-center">
+      <div class="p-5 border rounded-3 m-2 h-100">
+        <app-weather-model *ngIf="loaded" [images]="currentlyLoadedCaseOne" [index]="this.index"
+                           [visType]="this.display"></app-weather-model>
+      </div>
+      <div class="p-5 border rounded-3 m-2 h-100">
+        <app-weather-model *ngIf="loaded" [images]="currentlyLoadedCaseTwo" [index]="this.index"
+                           [visType]="this.display"></app-weather-model>
+      </div>
     </div>
-
-    <div class="d-flex justify-content-center w-50 mx-auto mt-5">
+    <!--Time Steps-->
+    <div class="d-flex justify-content-center w-50 mx-auto mt-5 button-align">
       <button [disabled]="this.index == 0 " type="button"
-              class="btn btn-outline-primary flex-fill me-5 d-flex align-items-center justify-content-center"
+              class="btn btn-outline-success flex-fill me-5 d-flex align-items-center justify-content-center"
               (click)="previous()">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24"
              fill="none">
           <path d="M15 6L9 12L15 18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <span class="d-flex align-items-center">{{this.index + 1}}/{{this.currentlyLoadedGfs.length}} time steps</span>
-      <button [disabled]="this.index == this.currentlyLoadedGfs.length - 1" type="button"
-              class="btn btn-outline-primary flex-fill ms-5"
+      <span class="d-flex align-items-center">{{this.index + 1}}/{{this.currentlyLoadedCaseOne.length}}
+        time steps</span>
+      <button [disabled]="this.index == this.currentlyLoadedCaseOne.length - 1" type="button"
+              class="btn btn-outline-success flex-fill ms-5"
               (click)="next()">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24"
              fill="none">
@@ -44,10 +68,7 @@
         </svg>
       </button>
     </div>
-
-
   </div>
-
 </div>
 
 

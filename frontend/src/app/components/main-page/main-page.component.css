@@ -1,0 +1,27 @@
+.div-height {
+  height: 590px;
+  order:4;
+}
+
+.div-height > div {
+  width: 80%;
+}
+
+.button-align {
+  order: 3;
+}
+
+
+@media (min-width:1200px) {
+  .div-height {
+    order:3;
+  }
+
+  .div-height > div {
+    width: 50%;
+  }
+
+  .button-align {
+    order: 4;
+  }
+}

@@ -40,3 +40,9 @@ rm -rf $TARGETDIR
 mkdir $TARGETDIR
 
 mv -v ${TYPE}_*.png $TARGETDIR
+
+cd $TARGETDIR
+
+for i in *.png ; do convert $i -crop 1854x2300+0+0 $i ; done
+
+for i in *.png ; do convert -trim $i $i ; done
